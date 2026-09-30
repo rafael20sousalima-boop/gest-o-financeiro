@@ -4,6 +4,7 @@ import "./globals.css";
 import { AppShell } from "@/components/AppShell";
 import { ensureConfig } from "@/actions";
 import { prisma } from "@/lib/prisma";
+export const dynamic = 'force-dynamic';
 
 const display = Fraunces({
   variable: "--font-display",
