@@ -57,7 +57,7 @@ export default async function ContasReceberPage() {
                 <tbody>
                   {contas.map((c) => (
                     <tr key={c.id}>
-                      <td>{c.cliente.nome}</td>
+                      <td>{c.cliente?.nome || "—"}</td>
                       <td>{formatDate(c.dataVenda)}</td>
                       <td>{c.descricao}</td>
                       <td>{formatMoney(c.valorOriginal)}</td>
