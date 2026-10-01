@@ -68,8 +68,14 @@ Certifique-se de que o projeto está no GitHub e que o `.env` não foi commitado
 
 1. Conecte seu repositório GitHub à Vercel
 2. Importe o projeto
-3. Configure as variáveis de ambiente (se não estiverem configuradas automaticamente)
+3. **IMPORTANTE:** Configure a variável de ambiente `DATABASE_URL`:
+   - Vá em Settings → Environment Variables
+   - Adicione: `DATABASE_URL` = sua connection string do Supabase
+   - Marque: Production, Preview, Development
+   - Exemplo: `postgresql://postgres:senha@db.PROJECT_REF.supabase.co:5432/postgres`
 4. Clique em Deploy
+
+**Nota:** O arquivo `vercel.json` está configurado para rodar as migrations automaticamente durante o build.
 
 ### 4. Rodar migrations no ambiente de produção
 
