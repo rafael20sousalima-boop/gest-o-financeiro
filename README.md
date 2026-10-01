@@ -75,7 +75,20 @@ Certifique-se de que o projeto está no GitHub e que o `.env` não foi commitado
    - Exemplo: `postgresql://postgres:senha@db.PROJECT_REF.supabase.co:5432/postgres`
 4. Clique em Deploy
 
-**Nota:** O arquivo `vercel.json` está configurado para rodar as migrations automaticamente durante o build.
+### 4. Rodar migrations em produção
+
+Após o primeiro deploy, você precisará rodar as migrations no banco de produção:
+
+**Via Vercel CLI:**
+```bash
+vercel env pull .env.local
+npx prisma migrate deploy
+```
+
+**Ou configure no painel da Vercel:**
+- Vá em Settings → Git → Build & Development Settings
+- Build Command: `npx prisma generate && npx prisma migrate deploy && next build`
+- Isso fará as migrations rodarem automaticamente em cada deploy
 
 ### 4. Rodar migrations no ambiente de produção
 
