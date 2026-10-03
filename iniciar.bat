@@ -1,59 +1,40 @@
 @echo off
-title Gestão Financeira - Iniciando...
-color 0A
+title Gestão Financeira - Inicializador Automático
+color 0a
 
-echo ========================================
-echo   Gestão Financeira - Next.js + Prisma
-echo ========================================
+:: Ir para o diretório do script
+cd /d "%~dp0"
+
+echo ===================================================
+echo   Iniciando Gestão Financeira
+echo   Conectado ao banco Neon PostgreSQL
+echo ===================================================
 echo.
 
-:: Verificar se Node.js está instalado
-echo [1/4] Verificando Node.js...
-node --version >nul 2>&1
-if %errorlevel% neq 0 (
-    echo ERRO: Node.js não está instalado!
-    echo Por favor, instale o Node.js em https://nodejs.org/
-    pause
-    exit /b 1
-)
-echo Node.js encontrado!
+:: Matar processos Node.js travados
+echo [1/3] Fechando processos Node.js...
+taskkill /F /IM node.exe >nul 2>&1
+timeout /t 1 /nobreak >nul
+echo Processos fechados.
 echo.
 
-:: Instalar dependências se necessário
-echo [2/4] Verificando dependências...
-if not exist "node_modules" (
-    echo Instalando dependências...
-    call npm install
-    if %errorlevel% neq 0 (
-        echo ERRO: Falha ao instalar dependências!
-        pause
-        exit /b 1
-    )
-) else (
-    echo Dependências já instaladas.
+:: Limpar cache do .next
+echo [2/3] Limpando cache do .next...
+if exist ".next" (
+    rd /s /q ".next" >nul 2>&1
 )
-echo.
-
-:: Gerar Prisma Client
-echo [3/4] Gerando Prisma Client...
-call npx prisma generate
-if %errorlevel% neq 0 (
-    echo ERRO: Falha ao gerar Prisma Client!
-    echo Verifique se o arquivo .env está configurado corretamente.
-    pause
-    exit /b 1
-)
+echo Cache limpo.
 echo.
 
 :: Iniciar servidor de desenvolvimento
-echo [4/4] Iniciando servidor de desenvolvimento...
+echo [3/3] Iniciando servidor de desenvolvimento...
 echo.
-echo ========================================
+echo ===================================================
 echo   Servidor iniciando em http://localhost:3000
 echo   Pressione Ctrl+C para parar
-echo ========================================
+echo ===================================================
 echo.
 
-call npm run dev
+call node start-dev.js
 
 pause
