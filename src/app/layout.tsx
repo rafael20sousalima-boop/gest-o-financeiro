@@ -4,6 +4,7 @@ import "./globals.css";
 import { AppShell } from "@/components/AppShell";
 import { Providers } from "@/components/Providers";
 import { ensureConfig } from "@/actions";
+import { ensureAdmin } from "@/lib/ensure-admin";
 import { prisma } from "@/lib/prisma";
 export const dynamic = 'force-dynamic';
 
@@ -30,6 +31,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   await ensureConfig();
+  await ensureAdmin();
   const config = await prisma.configuracao.findUnique({ where: { id: 1 } });
 
   return (
