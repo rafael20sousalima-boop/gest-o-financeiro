@@ -6,9 +6,10 @@ import { authOptions } from "@/lib/auth";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
+  const { id } = await params;
 
   if (!session || (session.user as any).role !== "admin") {
     return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
@@ -25,7 +26,7 @@ export async function POST(
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     await prisma.user.update({
-      where: { id: params.id },
+      where: { id },
       data: { password: hashedPassword }
     });
 

@@ -5,9 +5,10 @@ import { authOptions } from "@/lib/auth";
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
+  const { id } = await params;
 
   if (!session || (session.user as any).role !== "admin") {
     return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
@@ -15,7 +16,7 @@ export async function PATCH(
 
   try {
     const user = await prisma.user.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!user) {
@@ -23,7 +24,7 @@ export async function PATCH(
     }
 
     const updatedUser = await prisma.user.update({
-      where: { id: params.id },
+      where: { id },
       data: { ativo: !user.ativo }
     });
 

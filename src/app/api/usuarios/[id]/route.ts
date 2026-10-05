@@ -5,9 +5,10 @@ import { authOptions } from "@/lib/auth";
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
+  const { id } = await params;
 
   if (!session || (session.user as any).role !== "admin") {
     return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
@@ -15,7 +16,7 @@ export async function DELETE(
 
   try {
     await prisma.user.delete({
-      where: { id: params.id }
+      where: { id }
     });
 
     return NextResponse.json({ success: true });
