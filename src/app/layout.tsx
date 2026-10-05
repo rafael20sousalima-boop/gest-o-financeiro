@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Fraunces, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/AppShell";
+import { Providers } from "@/components/Providers";
 import { ensureConfig } from "@/actions";
 import { prisma } from "@/lib/prisma";
 export const dynamic = 'force-dynamic';
@@ -34,9 +35,11 @@ export default async function RootLayout({
   return (
     <html lang="pt-BR" className={`${display.variable} ${body.variable} h-full`}>
       <body className="min-h-full antialiased">
-        <AppShell empresa={config?.nomeEmpresa || "Gestão Financeira"}>
-          {children}
-        </AppShell>
+        <Providers>
+          <AppShell empresa={config?.nomeEmpresa || "Gestão Financeira"}>
+            {children}
+          </AppShell>
+        </Providers>
       </body>
     </html>
   );

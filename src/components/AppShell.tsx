@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { useSession, signOut } from "next-auth/react";
 import {
   LayoutDashboard,
   ShoppingCart,
@@ -15,6 +16,8 @@ import {
   Settings,
   Menu,
   X,
+  LogOut,
+  UserCog,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -28,6 +31,7 @@ const links = [
   { href: "/fluxo-de-caixa", label: "Fluxo de Caixa", icon: ArrowLeftRight },
   { href: "/estoque", label: "Estoque", icon: Package },
   { href: "/configuracoes", label: "Configurações", icon: Settings },
+  { href: "/usuarios", label: "Usuários", icon: UserCog, adminOnly: true },
 ];
 
 export function AppShell({
@@ -39,6 +43,12 @@ export function AppShell({
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const { data: session } = useSession();
+  const userRole = (session?.user as any)?.role;
+
+  const filteredLinks = links.filter(
+    (link) => !link.adminOnly || userRole === "admin"
+  );
 
   return (
     <div className="app-shell">
@@ -48,7 +58,7 @@ export function AppShell({
           <div className="brand-title">{empresa}</div>
         </div>
         <nav className="nav-list">
-          {links.map((link) => {
+          {filteredLinks.map((link) => {
             const Icon = link.icon;
             const active =
               link.href === "/"
@@ -67,6 +77,16 @@ export function AppShell({
             );
           })}
         </nav>
+        <div className="nav-list" style={{ marginTop: "auto" }}>
+          <button
+            onClick={() => signOut({ callbackUrl: "/login" })}
+            className="nav-link"
+            style={{ width: "100%", textAlign: "left", border: "none", background: "none", cursor: "pointer" }}
+          >
+            <LogOut size={18} />
+            <span>Sair</span>
+          </button>
+        </div>
       </aside>
 
       <div className="main-area">
@@ -80,6 +100,14 @@ export function AppShell({
             {open ? <X size={18} /> : <Menu size={18} />}
             Menu
           </button>
+          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <span style={{ fontSize: "0.875rem", color: "#666" }}>
+              {session?.user?.name}
+            </span>
+            <span style={{ fontSize: "0.75rem", padding: "0.25rem 0.5rem", borderRadius: "4px", background: userRole === "admin" ? "#dcfce7" : "#f3f4f6", color: userRole === "admin" ? "#166534" : "#374151" }}>
+              {userRole === "admin" ? "Admin" : "Usuário"}
+            </span>
+          </div>
         </div>
         {open && (
           <button

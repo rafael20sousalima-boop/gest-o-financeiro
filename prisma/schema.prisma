@@ -157,3 +157,14 @@ model Configuracao {
   nomeEmpresa  String @default("Minha Empresa")
   saldoInicial Float  @default(0)
 }
+
+model User {
+  id            String    @id @default(cuid())
+  username      String    @unique
+  password      String
+  role          String    @default("user")
+  nome          String?
+  ativo         Boolean   @default(true)
+  criadoEm      DateTime  @default(now())
+  atualizadoEm  DateTime  @updatedAt
+}
