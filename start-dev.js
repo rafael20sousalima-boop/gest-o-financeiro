@@ -26,9 +26,9 @@ if (fs.existsSync(envPath)) {
 // Iniciar Next.js
 console.log('\n🚀 Iniciando servidor de desenvolvimento...\n');
 
-const dev = spawn('npm', ['run', 'dev'], {
+const dev = spawn('cmd', ['/c', 'npm', 'run', 'dev'], {
   stdio: 'inherit',
-  shell: true
+  shell: false
 });
 
 dev.on('error', (err) => {

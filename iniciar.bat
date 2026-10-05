@@ -7,14 +7,14 @@ cd /d "%~dp0"
 
 echo ===================================================
 echo   Iniciando Gestão Financeira
-echo   Conectado ao banco Neon PostgreSQL
+echo   Conectado ao banco de dados PostgreSQL
 echo ===================================================
 echo.
 
 :: Matar processos Node.js travados
 echo [1/3] Fechando processos Node.js...
 taskkill /F /IM node.exe >nul 2>&1
-timeout /t 1 /nobreak >nul
+ping 127.0.0.1 -n 2 >nul
 echo Processos fechados.
 echo.
 

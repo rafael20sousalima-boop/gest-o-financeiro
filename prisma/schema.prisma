@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Cliente {
-  id            String   @id @default(cuid())
+  id            String             @id @default(cuid())
   nome          String
   documento     String?
   telefone      String?
@@ -17,18 +17,17 @@ model Cliente {
   bairro        String?
   cidade        String?
   observacao    String?
-  limiteCredito Float    @default(0)
-  status        String   @default("ativo")
-  criadoEm      DateTime @default(now())
-  atualizadoEm  DateTime @updatedAt
-
-  vendas        Venda[]
+  limiteCredito Float              @default(0)
+  status        String             @default("ativo")
+  criadoEm      DateTime           @default(now())
+  atualizadoEm  DateTime           @updatedAt
   contasReceber ContaReceber[]
   pagamentos    PagamentoReceber[]
+  vendas        Venda[]
 }
 
 model Fornecedor {
-  id               String   @id @default(cuid())
+  id               String       @id @default(cuid())
   nome             String
   documento        String?
   telefone         String?
@@ -36,90 +35,85 @@ model Fornecedor {
   endereco         String?
   produtoFornecido String?
   observacao       String?
-  criadoEm         DateTime @default(now())
-  atualizadoEm     DateTime @updatedAt
-
-  contasPagar ContaPagar[]
+  criadoEm         DateTime     @default(now())
+  atualizadoEm     DateTime     @updatedAt
+  contasPagar      ContaPagar[]
 }
 
 model Produto {
-  id            String   @id @default(cuid())
+  id            String                @id @default(cuid())
   nome          String
   categoria     String?
-  unidade       String   @default("unidade")
-  quantidade    Float    @default(0)
-  estoqueMinimo Float    @default(0)
-  custo         Float    @default(0)
-  precoVenda    Float    @default(0)
-  ativo         Boolean  @default(true)
-  criadoEm      DateTime @default(now())
-  atualizadoEm  DateTime @updatedAt
-
-  vendas        Venda[]
+  unidade       String                @default("unidade")
+  quantidade    Float                 @default(0)
+  estoqueMinimo Float                 @default(0)
+  custo         Float                 @default(0)
+  precoVenda    Float                 @default(0)
+  ativo         Boolean               @default(true)
+  criadoEm      DateTime              @default(now())
+  atualizadoEm  DateTime              @updatedAt
   movimentacoes MovimentacaoEstoque[]
+  vendas        Venda[]
 }
 
 model Venda {
-  id              String    @id @default(cuid())
-  dataVenda       DateTime  @default(now())
+  id              String                @id @default(cuid())
+  dataVenda       DateTime              @default(now())
   clienteId       String?
   produtoId       String?
   produtoNome     String
-  quantidade      Float     @default(1)
-  unidade         String    @default("unidade")
+  quantidade      Float                 @default(1)
+  unidade         String                @default("unidade")
   pesoKg          Float?
   precoPorKg      Float?
-  valorUnitario   Float     @default(0)
+  valorUnitario   Float                 @default(0)
   valorTotal      Float
   tipoPagamento   String
-  statusPagamento String    @default("pago")
+  statusPagamento String                @default("pago")
   dataVencimento  DateTime?
   observacao      String?
-  criadoEm        DateTime  @default(now())
-  atualizadoEm    DateTime  @updatedAt
-
-  cliente       Cliente?       @relation(fields: [clienteId], references: [id])
-  produto       Produto?       @relation(fields: [produtoId], references: [id])
-  contaReceber  ContaReceber?
-  movimentacoes MovimentacaoEstoque[]
+  criadoEm        DateTime              @default(now())
+  atualizadoEm    DateTime              @updatedAt
+  contaReceber    ContaReceber?
+  movimentacoes   MovimentacaoEstoque[]
+  cliente         Cliente?              @relation(fields: [clienteId], references: [id])
+  produto         Produto?              @relation(fields: [produtoId], references: [id])
 }
 
 model ContaReceber {
-  id             String    @id @default(cuid())
+  id             String             @id @default(cuid())
   clienteId      String
-  vendaId        String?   @unique
+  vendaId        String?            @unique
   dataVenda      DateTime
   descricao      String
   valorOriginal  Float
-  valorRecebido  Float     @default(0)
+  valorRecebido  Float              @default(0)
   saldoRestante  Float
   dataVencimento DateTime?
-  status         String    @default("aguardando_pagamento")
+  status         String             @default("aguardando_pagamento")
   observacao     String?
-  criadoEm       DateTime  @default(now())
-  atualizadoEm   DateTime  @updatedAt
-
-  cliente    Cliente             @relation(fields: [clienteId], references: [id])
-  venda      Venda?              @relation(fields: [vendaId], references: [id])
-  pagamentos PagamentoReceber[]
+  criadoEm       DateTime           @default(now())
+  atualizadoEm   DateTime           @updatedAt
+  cliente        Cliente            @relation(fields: [clienteId], references: [id])
+  venda          Venda?             @relation(fields: [vendaId], references: [id])
+  pagamentos     PagamentoReceber[]
 }
 
 model PagamentoReceber {
-  id            String   @id @default(cuid())
-  contaId       String
-  clienteId     String?
-  valor         Float
-  dataPagamento DateTime @default(now())
+  id             String       @id @default(cuid())
+  contaId        String
+  clienteId      String?
+  valor          Float
+  dataPagamento  DateTime     @default(now())
   formaPagamento String
-  observacao    String?
-  criadoEm      DateTime @default(now())
-
-  conta   ContaReceber @relation(fields: [contaId], references: [id], onDelete: Cascade)
-  cliente Cliente?     @relation(fields: [clienteId], references: [id])
+  observacao     String?
+  criadoEm       DateTime     @default(now())
+  cliente        Cliente?     @relation(fields: [clienteId], references: [id])
+  conta          ContaReceber @relation(fields: [contaId], references: [id], onDelete: Cascade)
 }
 
 model ContaPagar {
-  id             String    @id @default(cuid())
+  id             String      @id @default(cuid())
   descricao      String
   categoria      String
   fornecedorId   String?
@@ -127,37 +121,35 @@ model ContaPagar {
   valor          Float
   dataPagamento  DateTime?
   formaPagamento String?
-  status         String    @default("pendente")
+  status         String      @default("pendente")
   observacao     String?
-  criadoEm       DateTime  @default(now())
-  atualizadoEm   DateTime  @updatedAt
-
-  fornecedor Fornecedor? @relation(fields: [fornecedorId], references: [id])
+  criadoEm       DateTime    @default(now())
+  atualizadoEm   DateTime    @updatedAt
+  fornecedor     Fornecedor? @relation(fields: [fornecedorId], references: [id])
 }
 
 model MovimentacaoEstoque {
-  id        String   @id @default(cuid())
-  produtoId String
-  tipo      String
+  id         String   @id @default(cuid())
+  produtoId  String
+  tipo       String
   quantidade Float
-  data      DateTime @default(now())
+  data       DateTime @default(now())
   observacao String?
-  vendaId   String?
-  criadoEm  DateTime @default(now())
-
-  produto Produto @relation(fields: [produtoId], references: [id])
-  venda   Venda?  @relation(fields: [vendaId], references: [id])
+  vendaId    String?
+  criadoEm   DateTime @default(now())
+  produto    Produto  @relation(fields: [produtoId], references: [id])
+  venda      Venda?   @relation(fields: [vendaId], references: [id])
 }
 
 model MovimentacaoCaixa {
-  id          String   @id @default(cuid())
-  tipo        String
-  categoria   String
-  descricao   String
-  valor       Float
-  data        DateTime @default(now())
-  observacao  String?
-  criadoEm    DateTime @default(now())
+  id         String   @id @default(cuid())
+  tipo       String
+  categoria  String
+  descricao  String
+  valor      Float
+  data       DateTime @default(now())
+  observacao String?
+  criadoEm   DateTime @default(now())
 }
 
 model Configuracao {
