@@ -10,7 +10,7 @@ export async function PATCH(
   const session = await getServerSession(authOptions);
   const { id } = await params;
 
-  if (!session || (session.user as any).role !== "admin") {
+  if (!session || session.user.role !== "admin") {
     return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
   }
 
@@ -28,7 +28,9 @@ export async function PATCH(
       data: { ativo: !user.ativo }
     });
 
-    return NextResponse.json({ user: { ...updatedUser, password: undefined } });
+    const { password: _, ...userWithoutPassword } = updatedUser;
+
+    return NextResponse.json({ user: userWithoutPassword });
   } catch (error) {
     console.error("Erro ao atualizar status:", error);
     return NextResponse.json({ error: "Erro ao atualizar status" }, { status: 500 });

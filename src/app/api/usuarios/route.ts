@@ -5,13 +5,19 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
-  const session = await getServerSession(authOptions);
-
-  if (!session || (session.user as any).role !== "admin") {
-    return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
-  }
-
   try {
+    const session = await getServerSession(authOptions);
+
+    console.log("Session:", JSON.stringify(session, null, 2));
+
+    if (!session) {
+      return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
+    }
+
+    if (session.user.role !== "admin") {
+      return NextResponse.json({ error: "Não autorizado", role: session.user.role }, { status: 403 });
+    }
+
     const body = await request.json();
     const { username, password, nome, role } = body;
 
@@ -38,9 +44,11 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    return NextResponse.json({ user: { ...user, password: undefined } }, { status: 201 });
+    const { password: _, ...userWithoutPassword } = user;
+
+    return NextResponse.json({ user: userWithoutPassword }, { status: 201 });
   } catch (error) {
     console.error("Erro ao criar usuário:", error);
-    return NextResponse.json({ error: "Erro ao criar usuário" }, { status: 500 });
+    return NextResponse.json({ error: "Erro ao criar usuário", details: String(error) }, { status: 500 });
   }
 }

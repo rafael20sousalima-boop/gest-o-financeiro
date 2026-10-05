@@ -11,7 +11,7 @@ export async function POST(
   const session = await getServerSession(authOptions);
   const { id } = await params;
 
-  if (!session || (session.user as any).role !== "admin") {
+  if (!session || session.user.role !== "admin") {
     return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
   }
 
