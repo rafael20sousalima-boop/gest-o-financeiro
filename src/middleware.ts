@@ -15,7 +15,14 @@ export default withAuth(
   },
   {
     callbacks: {
-      authorized: ({ token }) => !!token
+      authorized: ({ token, req }) => {
+        const path = req.nextUrl.pathname;
+        // Permitir acesso sem autenticação para setup e login
+        if (path === "/setup" || path === "/login") {
+          return true;
+        }
+        return !!token;
+      }
     }
   }
 );
@@ -23,6 +30,8 @@ export default withAuth(
 export const config = {
   matcher: [
     "/",
+    "/setup",
+    "/login",
     "/clientes/:path*",
     "/fornecedores/:path*",
     "/estoque",
