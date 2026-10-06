@@ -304,6 +304,16 @@ export async function criarVenda(formData: FormData) {
 
   if (!produtoNome) throw new Error("Informe o produto");
 
+  // Validação específica para vendas por KG
+  if (unidade === "kg") {
+    if (!pesoKg || pesoKg <= 0) {
+      throw new Error("Informe o peso em KG para vender por quilo");
+    }
+    if (!precoPorKg || precoPorKg <= 0) {
+      throw new Error("Informe o preço por KG");
+    }
+  }
+
   const valorTotal = calcValorVenda({
     unidade,
     quantidade,

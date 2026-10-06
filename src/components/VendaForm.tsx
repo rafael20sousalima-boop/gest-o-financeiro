@@ -52,7 +52,7 @@ function MoneyInput({
       <input
         type="hidden"
         name={name}
-        value={value.toString()}
+        value={value > 0 ? value.toString() : "0"}
       />
     </>
   );
@@ -105,9 +105,11 @@ export function VendaForm({
     if (p.unidade === "kg") {
       setPrecoPorKg(p.precoVenda);
       setValorUnitario(0);
+      setPesoKg(0);
     } else {
       setValorUnitario(p.precoVenda);
       setPrecoPorKg(0);
+      setPesoKg(0);
     }
   }
 
@@ -206,7 +208,7 @@ export function VendaForm({
               required
             />
           </div>
-          <input type="hidden" name="quantidade" value={pesoKg || 0} />
+          <input type="hidden" name="quantidade" value={pesoKg > 0 ? pesoKg : 0} />
         </>
       ) : (
         <>
