@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { ensureConfig } from "@/actions";
 import { PageHeader, Panel, EmptyState } from "@/components/ui";
 import {
   ContaReceberForm,
@@ -16,7 +15,6 @@ import {
 export const dynamic = "force-dynamic";
 
 export default async function ContasReceberPage() {
-  await ensureConfig();
   const [contas, clientes] = await Promise.all([
     prisma.contaReceber.findMany({
       include: { cliente: true, pagamentos: true },

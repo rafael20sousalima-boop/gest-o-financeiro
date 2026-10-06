@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { ensureConfig } from "@/actions";
 import { PageHeader, Panel, EmptyState } from "@/components/ui";
 import { VendaForm, CancelarVendaButton } from "@/components/VendaForm";
 import {
@@ -13,7 +12,6 @@ import {
 export const dynamic = "force-dynamic";
 
 export default async function VendasPage() {
-  await ensureConfig();
   const [vendas, clientes, produtos] = await Promise.all([
     prisma.venda.findMany({
       include: { cliente: true },

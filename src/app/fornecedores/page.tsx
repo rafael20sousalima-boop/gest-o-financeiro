@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { ensureConfig } from "@/actions";
 import { PageHeader, Panel, EmptyState } from "@/components/ui";
 import { FornecedorForm, ExcluirFornecedorButton } from "@/components/ModuleForms";
 import { formatMoney } from "@/lib/utils";
@@ -8,7 +7,6 @@ import { formatMoney } from "@/lib/utils";
 export const dynamic = "force-dynamic";
 
 export default async function FornecedoresPage() {
-  await ensureConfig();
   const fornecedores = await prisma.fornecedor.findMany({
     orderBy: { nome: "asc" },
     include: { contasPagar: true },

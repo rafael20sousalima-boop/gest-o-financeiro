@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { ensureConfig } from "@/actions";
 import { PageHeader, Panel, EmptyState } from "@/components/ui";
 import { ClienteForm, ExcluirClienteButton } from "@/components/ClienteForms";
 import { badgeClass, formatMoney } from "@/lib/utils";
@@ -8,7 +7,6 @@ import { badgeClass, formatMoney } from "@/lib/utils";
 export const dynamic = "force-dynamic";
 
 export default async function ClientesPage() {
-  await ensureConfig();
   const clientes = await prisma.cliente.findMany({
     orderBy: { nome: "asc" },
     include: {

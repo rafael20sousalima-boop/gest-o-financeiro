@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { ensureConfig } from "@/actions";
 import { PageHeader, Panel, EmptyState, StatCard } from "@/components/ui";
 import { FornecedorForm } from "@/components/ModuleForms";
 import {
@@ -19,7 +18,6 @@ export default async function FornecedorDetalhePage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  await ensureConfig();
   const { id } = await params;
   const fornecedor = await prisma.fornecedor.findUnique({
     where: { id },

@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { ensureConfig } from "@/actions";
 import { PageHeader, Panel, EmptyState } from "@/components/ui";
 import { ProdutoForm, MovimentacaoEstoqueForm } from "@/components/ModuleForms";
 import { formatDate, formatMoney, labelUnidade } from "@/lib/utils";
@@ -7,7 +6,6 @@ import { formatDate, formatMoney, labelUnidade } from "@/lib/utils";
 export const dynamic = "force-dynamic";
 
 export default async function EstoquePage() {
-  await ensureConfig();
   const [produtos, movimentacoes] = await Promise.all([
     prisma.produto.findMany({ orderBy: { nome: "asc" } }),
     prisma.movimentacaoEstoque.findMany({

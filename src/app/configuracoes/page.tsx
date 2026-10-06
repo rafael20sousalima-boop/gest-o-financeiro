@@ -1,12 +1,10 @@
 import { prisma } from "@/lib/prisma";
-import { ensureConfig } from "@/actions";
 import { PageHeader, Panel } from "@/components/ui";
 import { ConfigForm } from "@/components/ModuleForms";
 
 export const dynamic = "force-dynamic";
 
 export default async function ConfiguracoesPage() {
-  await ensureConfig();
   const config = await prisma.configuracao.findUnique({ where: { id: 1 } });
 
   return (

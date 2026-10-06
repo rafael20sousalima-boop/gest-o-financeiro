@@ -302,7 +302,6 @@ export async function getFluxoCaixa(periodo: PeriodoFiltro, de?: string, ate?: s
 }
 
 export async function getClienteDetalhe(id: string) {
-  await ensureConfig();
   const cliente = await prisma.cliente.findUnique({
     where: { id },
     include: {
