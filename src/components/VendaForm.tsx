@@ -4,6 +4,60 @@ import { useMemo, useState, useTransition } from "react";
 import { criarVenda, cancelarVenda } from "@/actions";
 import { FORMAS_PAGAMENTO, UNIDADES, calcValorVenda, toInputDate, formatMoney } from "@/lib/utils";
 
+function MoneyInput({
+  value,
+  onChange,
+  name,
+  placeholder = "R$ 0,00",
+  ...props
+}: {
+  value: number;
+  onChange: (value: number) => void;
+  name: string;
+  placeholder?: string;
+} & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'name'>) {
+  const [displayValue, setDisplayValue] = useState("");
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawValue = e.target.value.replace(/\D/g, '');
+    const numericValue = Number(rawValue) / 100;
+    onChange(numericValue);
+    setDisplayValue(rawValue);
+  };
+
+  const handleBlur = () => {
+    setDisplayValue("");
+  };
+
+  const formattedValue = displayValue
+    ? (Number(displayValue) / 100).toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      })
+    : value > 0
+    ? formatMoney(value)
+    : '';
+
+  return (
+    <>
+      <input
+        {...props}
+        type="text"
+        value={formattedValue}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        placeholder={placeholder}
+        inputMode="numeric"
+      />
+      <input
+        type="hidden"
+        name={name}
+        value={value.toString()}
+      />
+    </>
+  );
+}
+
 type Cliente = { id: string; nome: string };
 type Produto = {
   id: string;
@@ -136,8 +190,8 @@ export function VendaForm({
               name="pesoKg"
               type="number"
               step="0.001"
-              min="0"
-              value={pesoKg}
+              min="0.001"
+              value={pesoKg || ""}
               onChange={(e) => setPesoKg(Number(e.target.value))}
               required
               placeholder="0.000"
@@ -145,24 +199,14 @@ export function VendaForm({
           </div>
           <div className="field">
             <label>Preço por KG</label>
-            <input
+            <MoneyInput
               name="precoPorKg"
-              type="number"
-              step="0.01"
-              min="0"
               value={precoPorKg}
-              onChange={(e) => setPrecoPorKg(Number(e.target.value))}
+              onChange={setPrecoPorKg}
               required
-              placeholder="0.00"
             />
-            {precoPorKg > 0 && (
-              <small style={{ color: "var(--text-muted)" }}>
-                {formatMoney(precoPorKg)}
-              </small>
-            )}
           </div>
-          <input type="hidden" name="quantidade" value={pesoKg} />
-          <input type="hidden" name="valorUnitario" value={precoPorKg} />
+          <input type="hidden" name="quantidade" value={pesoKg || 0} />
         </>
       ) : (
         <>
@@ -181,15 +225,11 @@ export function VendaForm({
           </div>
           <div className="field">
             <label>Valor unitário</label>
-            <input
+            <MoneyInput
               name="valorUnitario"
-              type="number"
-              step="0.01"
-              min="0"
               value={valorUnitario}
-              onChange={(e) => setValorUnitario(Number(e.target.value))}
+              onChange={setValorUnitario}
               required
-              placeholder="0.00"
             />
           </div>
         </>
