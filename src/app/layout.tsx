@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Fraunces, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/AppShell";
-import { ensureConfig } from "@/actions";
 import { prisma } from "@/lib/prisma";
 export const dynamic = 'force-dynamic';
 
@@ -31,8 +30,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  await ensureConfig();
-  const config = await prisma.configuracao.findUnique({ where: { id: 1 } });
+  let config = null;
+  try {
+    config = await prisma.configuracao.findUnique({ where: { id: 1 } });
+  } catch (error) {
+    // Database not configured yet
+  }
 
   return (
     <html lang="pt-BR" className={`${display.variable} ${body.variable} h-full`}>

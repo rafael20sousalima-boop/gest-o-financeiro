@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { ensureConfig } from "@/actions";
 import { getPeriodoRange, PeriodoFiltro } from "@/lib/utils";
 import {
   eachMonthOfInterval,
@@ -15,7 +14,6 @@ export async function getDashboardData(
   de?: string,
   ate?: string
 ) {
-  await ensureConfig();
   const { inicio, fim } = getPeriodoRange(periodo, de, ate);
 
   const [vendas, contasReceber, contasPagar, clientes, pagamentos, config] =
@@ -227,7 +225,6 @@ export async function getDashboardData(
 }
 
 export async function getFluxoCaixa(periodo: PeriodoFiltro, de?: string, ate?: string) {
-  await ensureConfig();
   const { inicio, fim } = getPeriodoRange(periodo, de, ate);
   const config = await prisma.configuracao.findUnique({ where: { id: 1 } });
 
