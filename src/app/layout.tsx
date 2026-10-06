@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import { Fraunces, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/AppShell";
-import { Providers } from "@/components/Providers";
 import { ensureConfig } from "@/actions";
-import { ensureAdmin } from "@/lib/ensure-admin";
 import { prisma } from "@/lib/prisma";
 export const dynamic = 'force-dynamic';
 
@@ -23,6 +21,9 @@ const body = Source_Sans_3({
 export const metadata: Metadata = {
   title: "Gestão Financeira",
   description: "Sistema de gestão financeira para comércio",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default async function RootLayout({
@@ -31,17 +32,14 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   await ensureConfig();
-  await ensureAdmin();
   const config = await prisma.configuracao.findUnique({ where: { id: 1 } });
 
   return (
     <html lang="pt-BR" className={`${display.variable} ${body.variable} h-full`}>
       <body className="min-h-full antialiased">
-        <Providers>
-          <AppShell empresa={config?.nomeEmpresa || "Gestão Financeira"}>
-            {children}
-          </AppShell>
-        </Providers>
+        <AppShell empresa={config?.nomeEmpresa || "Gestão Financeira"}>
+          {children}
+        </AppShell>
       </body>
     </html>
   );
