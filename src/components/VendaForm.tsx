@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { criarVenda, cancelarVenda } from "@/actions";
-import { FORMAS_PAGAMENTO, UNIDADES, calcValorVenda, toInputDate } from "@/lib/utils";
+import { FORMAS_PAGAMENTO, UNIDADES, calcValorVenda, toInputDate, formatMoney } from "@/lib/utils";
 
 type Cliente = { id: string; nome: string };
 type Produto = {
@@ -140,6 +140,7 @@ export function VendaForm({
               value={pesoKg}
               onChange={(e) => setPesoKg(Number(e.target.value))}
               required
+              placeholder="0.000"
             />
           </div>
           <div className="field">
@@ -152,10 +153,16 @@ export function VendaForm({
               value={precoPorKg}
               onChange={(e) => setPrecoPorKg(Number(e.target.value))}
               required
+              placeholder="0.00"
             />
+            {precoPorKg > 0 && (
+              <small style={{ color: "var(--text-muted)" }}>
+                {formatMoney(precoPorKg)}
+              </small>
+            )}
           </div>
-          <input type="hidden" name="quantidade" value={pesoKg || 1} />
-          <input type="hidden" name="valorUnitario" value={precoPorKg || 0} />
+          <input type="hidden" name="quantidade" value={pesoKg} />
+          <input type="hidden" name="valorUnitario" value={precoPorKg} />
         </>
       ) : (
         <>
@@ -169,6 +176,7 @@ export function VendaForm({
               value={quantidade}
               onChange={(e) => setQuantidade(Number(e.target.value))}
               required
+              placeholder="0"
             />
           </div>
           <div className="field">
@@ -181,6 +189,7 @@ export function VendaForm({
               value={valorUnitario}
               onChange={(e) => setValorUnitario(Number(e.target.value))}
               required
+              placeholder="0.00"
             />
           </div>
         </>
@@ -208,7 +217,7 @@ export function VendaForm({
       )}
       <div className="field">
         <label>Valor total (calculado)</label>
-        <input value={total.toFixed(2)} readOnly />
+        <input value={formatMoney(total)} readOnly />
       </div>
       <div className="field full">
         <label>Observação</label>

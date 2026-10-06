@@ -55,6 +55,9 @@ export const authOptions: NextAuthOptions = {
       return session;
     }
   },
+  jwt: {
+    secret: process.env.NEXTAUTH_SECRET || "dev-secret-key-change-in-production",
+  },
   pages: {
     signIn: "/login"
   },
