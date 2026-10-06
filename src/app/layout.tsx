@@ -20,9 +20,6 @@ const body = Source_Sans_3({
 export const metadata: Metadata = {
   title: "Gestão Financeira",
   description: "Sistema de gestão financeira para comércio",
-  icons: {
-    icon: "/favicon.ico",
-  },
 };
 
 export default async function RootLayout({
