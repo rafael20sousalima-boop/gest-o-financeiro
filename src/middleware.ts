@@ -1,23 +1,19 @@
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
 
-export async function middleware(request: NextRequest) {
+export function middleware(request: any) {
   const { pathname } = request.nextUrl;
 
-  // Se estiver na página de login ou setup, não fazer verificação
-  if (pathname === "/login" || pathname === "/setup") {
+  // Não verificar autenticação para páginas públicas
+  if (pathname === "/login" || pathname === "/setup" || pathname.startsWith("/api/auth")) {
     return NextResponse.next();
   }
 
-  // Verificar se o usuário está autenticado
-  const token = await getToken({
-    req: request,
-    secret: process.env.NEXTAUTH_SECRET || "dev-secret-key-change-in-production",
-  });
+  // Verificar se tem cookie de sessão
+  const sessionCookie = request.cookies.get("next-auth.session-token") ||
+                       request.cookies.get("__Secure-next-auth.session-token");
 
-  // Se não estiver autenticado, redirecionar para login
-  if (!token) {
+  // Se não tiver sessão, redirecionar para login
+  if (!sessionCookie) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);

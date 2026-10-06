@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import { signOut, useSession } from "next-auth/react";
 import {
   LayoutDashboard,
   ShoppingCart,
@@ -15,6 +16,7 @@ import {
   Settings,
   Menu,
   X,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -38,7 +40,15 @@ export function AppShell({
   empresa: string;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { data: session } = useSession();
   const [open, setOpen] = useState(false);
+
+  const handleLogout = async () => {
+    await signOut({ redirect: false });
+    router.push("/login");
+    router.refresh();
+  };
 
   return (
     <div className="app-shell">
@@ -66,6 +76,28 @@ export function AppShell({
               </Link>
             );
           })}
+          {session && (
+            <button
+              type="button"
+              className="nav-link"
+              onClick={handleLogout}
+              style={{
+                width: "100%",
+                textAlign: "left",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: "0.75rem 1rem",
+                color: "var(--text-muted)",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+              }}
+            >
+              <LogOut size={18} />
+              <span>Sair</span>
+            </button>
+          )}
         </nav>
       </aside>
 

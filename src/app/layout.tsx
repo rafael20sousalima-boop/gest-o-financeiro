@@ -3,6 +3,7 @@ import { Fraunces, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/AppShell";
 import { prisma } from "@/lib/prisma";
+import { Providers } from "@/components/Providers";
 export const dynamic = 'force-dynamic';
 
 const display = Fraunces({
@@ -37,9 +38,11 @@ export default async function RootLayout({
   return (
     <html lang="pt-BR" className={`${display.variable} ${body.variable} h-full`}>
       <body className="min-h-full antialiased">
-        <AppShell empresa={config?.nomeEmpresa || "Gestão Financeira"}>
-          {children}
-        </AppShell>
+        <Providers>
+          <AppShell empresa={config?.nomeEmpresa || "Gestão Financeira"}>
+            {children}
+          </AppShell>
+        </Providers>
       </body>
     </html>
   );
