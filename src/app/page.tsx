@@ -21,7 +21,25 @@ export default async function DashboardPage({
 }) {
   const params = await searchParams;
   const periodo = (params.periodo as PeriodoFiltro) || "mes";
-  const data = await getDashboardData(periodo, params.de, params.ate);
+  
+  let data;
+  try {
+    data = await getDashboardData(periodo, params.de, params.ate);
+  } catch (error) {
+    // Redirect to setup if database is not configured
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8 text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Configuração Necessária</h1>
+          <p className="text-gray-600 mb-6">O sistema precisa ser configurado antes de usar.</p>
+          <a href="/setup" className="inline-block bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">
+            Configurar Sistema
+          </a>
+        </div>
+      </div>
+    );
+  }
+  
   const i = data.indicadores;
 
   return (
