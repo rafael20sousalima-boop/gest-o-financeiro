@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
 
-export function middleware(request: any) {
+export async function middleware(request: any) {
   const { pathname } = request.nextUrl;
 
   // Não verificar autenticação para páginas públicas
@@ -8,12 +9,21 @@ export function middleware(request: any) {
     return NextResponse.next();
   }
 
-  // Verificar se tem cookie de sessão
-  const sessionCookie = request.cookies.get("next-auth.session-token") ||
-                       request.cookies.get("__Secure-next-auth.session-token");
+  // Validar o token JWT da sessão
+  try {
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET || "dev-secret-key-change-in-production",
+    });
 
-  // Se não tiver sessão, redirecionar para login
-  if (!sessionCookie) {
+    // Se não tiver token válido, redirecionar para login
+    if (!token) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("callbackUrl", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+  } catch (error) {
+    // Em caso de erro na validação, redirecionar para login
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);

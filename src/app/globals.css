@@ -19,6 +19,24 @@
   --radius: 18px;
 }
 
+[data-theme="dark"] {
+  --bg: #0a0f0d;
+  --bg-elevated: #14201a;
+  --bg-soft: #1a2821;
+  --ink: #f4faf6;
+  --ink-muted: #9aaa9f;
+  --line: #2a3d33;
+  --brand: #2ecf9a;
+  --brand-strong: #1fa878;
+  --brand-soft: #1a4a33;
+  --accent: #ff8c5a;
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --danger: #f87171;
+  --info: #60a5fa;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
 @theme inline {
   --color-background: var(--bg);
   --color-foreground: var(--ink);
@@ -44,6 +62,14 @@ body {
     radial-gradient(circle at top right, rgba(196, 92, 38, 0.08), transparent 24%),
     linear-gradient(180deg, #f7faf8 0%, var(--bg) 48%, #eef3f0 100%);
   font-family: var(--font-body), Georgia, serif;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+[data-theme="dark"] body {
+  background:
+    radial-gradient(circle at top left, rgba(46, 207, 154, 0.08), transparent 28%),
+    radial-gradient(circle at top right, rgba(255, 140, 90, 0.06), transparent 24%),
+    linear-gradient(180deg, #0d1511 0%, var(--bg) 48%, #080c0a 100%);
 }
 
 a {
@@ -76,6 +102,12 @@ textarea {
   flex-direction: column;
   gap: 1.5rem;
   overflow-y: auto;
+  transition: background 0.3s ease;
+}
+
+[data-theme="dark"] .sidebar {
+  background:
+    linear-gradient(180deg, #0a1f18 0%, #081a13 55%, #06120e 100%);
 }
 
 .brand-block {
@@ -186,6 +218,11 @@ textarea {
   border-radius: 18px;
   box-shadow: var(--shadow);
   animation: rise 0.45s ease both;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+[data-theme="dark"] .stat-card {
+  background: linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg-soft) 100%);
 }
 
 .stat-card::before {
@@ -294,6 +331,13 @@ textarea {
   padding: 0.75rem 0.85rem;
   color: var(--ink);
   outline: none;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+[data-theme="dark"] .field input,
+[data-theme="dark"] .field select,
+[data-theme="dark"] .field textarea {
+  background: var(--bg-elevated);
 }
 
 .field input:focus,
@@ -374,6 +418,11 @@ table.data-table th {
   padding: 0.55rem 0.9rem;
   cursor: pointer;
   font-weight: 600;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+[data-theme="dark"] .filter-chip {
+  background: var(--bg-elevated);
 }
 
 .filter-chip.active {

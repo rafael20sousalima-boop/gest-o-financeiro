@@ -30,16 +30,27 @@ export default async function RootLayout({
 }>) {
   let config = null;
   try {
-    config = await prisma.configuracao.findUnique({ where: { id: 1 } });
+    // Adicionar timeout para evitar travamentos
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error("Database timeout")), 3000)
+    );
+    
+    config = await Promise.race([
+      prisma.configuracao.findUnique({ where: { id: 1 } }),
+      timeoutPromise
+    ]) as any;
   } catch (error) {
-    // Database not configured yet
+    // Database not configured yet or timeout
+    console.error("Error fetching config:", error);
   }
+
+  const empresa = config?.nomeEmpresa || "Gestão Financeira";
 
   return (
     <html lang="pt-BR" className={`${display.variable} ${body.variable} h-full`}>
       <body className="min-h-full antialiased">
         <Providers>
-          <AppShell empresa={config?.nomeEmpresa || "Gestão Financeira"}>
+          <AppShell empresa={empresa}>
             {children}
           </AppShell>
         </Providers>

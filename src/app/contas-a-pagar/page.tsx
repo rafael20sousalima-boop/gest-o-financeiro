@@ -12,16 +12,22 @@ import {
   labelFormaPagamento,
   statusPagarLabel,
 } from "@/lib/utils";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export default async function ContasPagarPage() {
+  const session = await getServerSession(authOptions);
+  const userId = (session?.user as any)?.id;
+  
   const [contas, fornecedores] = await Promise.all([
     prisma.contaPagar.findMany({
+      where: { userId },
       include: { fornecedor: true },
       orderBy: { dataVencimento: "asc" },
     }),
-    prisma.fornecedor.findMany({ orderBy: { nome: "asc" } }),
+    prisma.fornecedor.findMany({ where: { userId }, orderBy: { nome: "asc" } }),
   ]);
 
   return (

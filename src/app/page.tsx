@@ -11,6 +11,8 @@ import {
   VendasPeriodoChart,
 } from "@/components/Charts";
 import { formatDate } from "@/lib/utils";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -21,10 +23,12 @@ export default async function DashboardPage({
 }) {
   const params = await searchParams;
   const periodo = (params.periodo as PeriodoFiltro) || "mes";
+  const session = await getServerSession(authOptions);
+  const userId = (session?.user as any)?.id;
   
   let data;
   try {
-    data = await getDashboardData(periodo, params.de, params.ate);
+    data = await getDashboardData(periodo, params.de, params.ate, userId);
   } catch (error) {
     // Redirect to setup if database is not configured
     return (

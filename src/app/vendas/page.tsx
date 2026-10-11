@@ -8,17 +8,23 @@ import {
   labelFormaPagamento,
   statusVendaLabel,
 } from "@/lib/utils";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export default async function VendasPage() {
+  const session = await getServerSession(authOptions);
+  const userId = (session?.user as any)?.id;
+  
   const [vendas, clientes, produtos] = await Promise.all([
     prisma.venda.findMany({
+      where: { userId },
       include: { cliente: true },
       orderBy: { dataVenda: "desc" },
     }),
-    prisma.cliente.findMany({ where: { status: "ativo" }, orderBy: { nome: "asc" } }),
-    prisma.produto.findMany({ where: { ativo: true }, orderBy: { nome: "asc" } }),
+    prisma.cliente.findMany({ where: { userId, status: "ativo" }, orderBy: { nome: "asc" } }),
+    prisma.produto.findMany({ where: { userId, ativo: true }, orderBy: { nome: "asc" } }),
   ]);
 
   return (

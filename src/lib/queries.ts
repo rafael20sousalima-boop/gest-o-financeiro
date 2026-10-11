@@ -12,14 +12,18 @@ import { ptBR } from "date-fns/locale";
 export async function getDashboardData(
   periodo: PeriodoFiltro = "mes",
   de?: string,
-  ate?: string
+  ate?: string,
+  userId?: string
 ) {
   const { inicio, fim } = getPeriodoRange(periodo, de, ate);
+
+  const whereClause = userId ? { userId } : {};
 
   const [vendas, contasReceber, contasPagar, clientes, pagamentos, config] =
     await Promise.all([
       prisma.venda.findMany({
         where: {
+          ...whereClause,
           statusPagamento: { not: "cancelado" },
           dataVenda: { gte: inicio, lte: fim },
         },
@@ -27,15 +31,15 @@ export async function getDashboardData(
         orderBy: { dataVenda: "desc" },
       }),
       prisma.contaReceber.findMany({
-        where: { status: { not: "cancelado" } },
+        where: { ...whereClause, status: { not: "cancelado" } },
         include: { cliente: true },
       }),
       prisma.contaPagar.findMany({
-        where: { status: { not: "cancelado" } },
+        where: { ...whereClause, status: { not: "cancelado" } },
       }),
-      prisma.cliente.count({ where: { status: "ativo" } }),
+      prisma.cliente.count({ where: { ...whereClause, status: "ativo" } }),
       prisma.pagamentoReceber.findMany({
-        where: { dataPagamento: { gte: inicio, lte: fim } },
+        where: { ...whereClause, dataPagamento: { gte: inicio, lte: fim } },
       }),
       prisma.configuracao.findUnique({ where: { id: 1 } }),
     ]);
@@ -78,15 +82,17 @@ export async function getDashboardData(
 
   const todasVendasChart = await prisma.venda.findMany({
     where: {
+      ...whereClause,
       statusPagamento: { not: "cancelado" },
       dataVenda: { gte: chartStart, lte: fim },
     },
   });
   const todosPagamentosChart = await prisma.pagamentoReceber.findMany({
-    where: { dataPagamento: { gte: chartStart, lte: fim } },
+    where: { ...whereClause, dataPagamento: { gte: chartStart, lte: fim } },
   });
   const todasDespesasChart = await prisma.contaPagar.findMany({
     where: {
+      ...whereClause,
       status: "pago",
       dataPagamento: { gte: chartStart, lte: fim },
     },
@@ -224,31 +230,35 @@ export async function getDashboardData(
   };
 }
 
-export async function getFluxoCaixa(periodo: PeriodoFiltro, de?: string, ate?: string) {
+export async function getFluxoCaixa(periodo: PeriodoFiltro, de?: string, ate?: string, userId?: string) {
   const { inicio, fim } = getPeriodoRange(periodo, de, ate);
   const config = await prisma.configuracao.findUnique({ where: { id: 1 } });
+
+  const whereClause = userId ? { userId } : {};
 
   const [vendas, pagamentos, contasPagas, manuais] = await Promise.all([
     prisma.venda.findMany({
       where: {
+        ...whereClause,
         statusPagamento: { not: "cancelado" },
         tipoPagamento: { not: "fiado" },
         dataVenda: { gte: inicio, lte: fim },
       },
     }),
     prisma.pagamentoReceber.findMany({
-      where: { dataPagamento: { gte: inicio, lte: fim } },
+      where: { ...whereClause, dataPagamento: { gte: inicio, lte: fim } },
       include: { conta: true, cliente: true },
     }),
     prisma.contaPagar.findMany({
       where: {
+        ...whereClause,
         status: "pago",
         dataPagamento: { gte: inicio, lte: fim },
       },
       include: { fornecedor: true },
     }),
     prisma.movimentacaoCaixa.findMany({
-      where: { data: { gte: inicio, lte: fim } },
+      where: { ...whereClause, data: { gte: inicio, lte: fim } },
       orderBy: { data: "desc" },
     }),
   ]);

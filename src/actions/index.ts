@@ -2,12 +2,19 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import {
   calcValorVenda,
   parseInputDate,
   resolveStatusPagar,
   resolveStatusReceber,
 } from "@/lib/utils";
+
+async function getCurrentUserId() {
+  const session = await getServerSession(authOptions);
+  return (session?.user as any)?.id;
+}
 
 async function syncStatuses() {
   const hoje = new Date();
@@ -86,8 +93,12 @@ export async function criarCliente(formData: FormData) {
   const nome = formString(formData, "nome");
   if (!nome) throw new Error("Nome é obrigatório");
 
+  const userId = await getCurrentUserId();
+  if (!userId) throw new Error("Não autenticado");
+
   await prisma.cliente.create({
     data: {
+      userId,
       nome,
       documento: formString(formData, "documento") || null,
       telefone: formString(formData, "telefone") || null,
@@ -141,8 +152,12 @@ export async function criarFornecedor(formData: FormData) {
   const nome = formString(formData, "nome");
   if (!nome) throw new Error("Nome é obrigatório");
 
+  const userId = await getCurrentUserId();
+  if (!userId) throw new Error("Não autenticado");
+
   await prisma.fornecedor.create({
     data: {
+      userId,
       nome,
       documento: formString(formData, "documento") || null,
       telefone: formString(formData, "telefone") || null,
@@ -189,10 +204,14 @@ export async function criarProduto(formData: FormData) {
   const nome = formString(formData, "nome");
   if (!nome) throw new Error("Nome do produto é obrigatório");
 
+  const userId = await getCurrentUserId();
+  if (!userId) throw new Error("Não autenticado");
+
   const quantidade = formNumber(formData, "quantidade");
 
   const produto = await prisma.produto.create({
     data: {
+      userId,
       nome,
       categoria: formString(formData, "categoria") || null,
       unidade: formString(formData, "unidade") || "unidade",
@@ -206,6 +225,7 @@ export async function criarProduto(formData: FormData) {
   if (quantidade > 0) {
     await prisma.movimentacaoEstoque.create({
       data: {
+        userId,
         produtoId: produto.id,
         tipo: "entrada",
         quantidade,
@@ -246,6 +266,9 @@ export async function movimentarEstoque(formData: FormData) {
     throw new Error("Dados da movimentação inválidos");
   }
 
+  const userId = await getCurrentUserId();
+  if (!userId) throw new Error("Não autenticado");
+
   const produto = await prisma.produto.findUnique({ where: { id: produtoId } });
   if (!produto) throw new Error("Produto não encontrado");
 
@@ -264,6 +287,7 @@ export async function movimentarEstoque(formData: FormData) {
     }),
     prisma.movimentacaoEstoque.create({
       data: {
+        userId,
         produtoId,
         tipo,
         quantidade: tipo === "ajuste" ? novaQtd : quantidade,

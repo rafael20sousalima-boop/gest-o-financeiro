@@ -3,11 +3,17 @@ import { prisma } from "@/lib/prisma";
 import { PageHeader, Panel, EmptyState } from "@/components/ui";
 import { ClienteForm, ExcluirClienteButton } from "@/components/ClienteForms";
 import { badgeClass, formatMoney } from "@/lib/utils";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export default async function ClientesPage() {
+  const session = await getServerSession(authOptions);
+  const userId = (session?.user as any)?.id;
+  
   const clientes = await prisma.cliente.findMany({
+    where: { userId },
     orderBy: { nome: "asc" },
     include: {
       contasReceber: true,

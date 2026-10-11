@@ -8,11 +8,11 @@ export async function ensureAdmin() {
 
   if (!adminUser) {
     console.log("Criando usuário admin padrão...");
-    const hashedPassword = await bcrypt.hash("Lima1212", 10);
+    const hashedPassword = await bcrypt.hash("Admin12", 10);
 
     await prisma.user.create({
       data: {
-        username: "Rafael1212",
+        username: "ADMIN",
         password: hashedPassword,
         nome: "Admin",
         role: "admin",
@@ -20,6 +20,6 @@ export async function ensureAdmin() {
       }
     });
 
-    console.log("Usuário admin criado: Rafael1212 / Lima1212");
+    console.log("Usuário admin criado: ADMIN / Admin12");
   }
 }

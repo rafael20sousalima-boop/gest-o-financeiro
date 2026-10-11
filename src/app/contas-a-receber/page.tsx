@@ -11,16 +11,22 @@ import {
   formatMoney,
   statusReceberLabel,
 } from "@/lib/utils";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export default async function ContasReceberPage() {
+  const session = await getServerSession(authOptions);
+  const userId = (session?.user as any)?.id;
+  
   const [contas, clientes] = await Promise.all([
     prisma.contaReceber.findMany({
+      where: { userId },
       include: { cliente: true, pagamentos: true },
       orderBy: { dataVenda: "desc" },
     }),
-    prisma.cliente.findMany({ where: { status: "ativo" }, orderBy: { nome: "asc" } }),
+    prisma.cliente.findMany({ where: { userId, status: "ativo" }, orderBy: { nome: "asc" } }),
   ]);
 
   return (

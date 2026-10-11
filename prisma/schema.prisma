@@ -9,6 +9,7 @@ datasource db {
 
 model Cliente {
   id            String             @id @default(cuid())
+  userId        String
   nome          String
   documento     String?
   telefone      String?
@@ -24,10 +25,12 @@ model Cliente {
   contasReceber ContaReceber[]
   pagamentos    PagamentoReceber[]
   vendas        Venda[]
+  user          User               @relation(fields: [userId], references: [id])
 }
 
 model Fornecedor {
   id               String       @id @default(cuid())
+  userId           String
   nome             String
   documento        String?
   telefone         String?
@@ -38,10 +41,12 @@ model Fornecedor {
   criadoEm         DateTime     @default(now())
   atualizadoEm     DateTime     @updatedAt
   contasPagar      ContaPagar[]
+  user             User         @relation(fields: [userId], references: [id])
 }
 
 model Produto {
   id            String                @id @default(cuid())
+  userId        String
   nome          String
   categoria     String?
   unidade       String                @default("unidade")
@@ -54,10 +59,12 @@ model Produto {
   atualizadoEm  DateTime              @updatedAt
   movimentacoes MovimentacaoEstoque[]
   vendas        Venda[]
+  user          User                  @relation(fields: [userId], references: [id])
 }
 
 model Venda {
   id              String                @id @default(cuid())
+  userId          String
   dataVenda       DateTime              @default(now())
   clienteId       String?
   produtoId       String?
@@ -78,10 +85,12 @@ model Venda {
   movimentacoes   MovimentacaoEstoque[]
   cliente         Cliente?              @relation(fields: [clienteId], references: [id])
   produto         Produto?              @relation(fields: [produtoId], references: [id])
+  user            User                  @relation(fields: [userId], references: [id])
 }
 
 model ContaReceber {
   id             String             @id @default(cuid())
+  userId         String
   clienteId      String
   vendaId        String?            @unique
   dataVenda      DateTime
@@ -97,10 +106,12 @@ model ContaReceber {
   cliente        Cliente            @relation(fields: [clienteId], references: [id])
   venda          Venda?             @relation(fields: [vendaId], references: [id])
   pagamentos     PagamentoReceber[]
+  user           User               @relation(fields: [userId], references: [id])
 }
 
 model PagamentoReceber {
   id             String       @id @default(cuid())
+  userId         String
   contaId        String
   clienteId      String?
   valor          Float
@@ -110,10 +121,12 @@ model PagamentoReceber {
   criadoEm       DateTime     @default(now())
   cliente        Cliente?     @relation(fields: [clienteId], references: [id])
   conta          ContaReceber @relation(fields: [contaId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id])
 }
 
 model ContaPagar {
   id             String      @id @default(cuid())
+  userId         String
   descricao      String
   categoria      String
   fornecedorId   String?
@@ -126,10 +139,12 @@ model ContaPagar {
   criadoEm       DateTime    @default(now())
   atualizadoEm   DateTime    @updatedAt
   fornecedor     Fornecedor? @relation(fields: [fornecedorId], references: [id])
+  user           User        @relation(fields: [userId], references: [id])
 }
 
 model MovimentacaoEstoque {
   id         String   @id @default(cuid())
+  userId     String
   produtoId  String
   tipo       String
   quantidade Float
@@ -139,10 +154,12 @@ model MovimentacaoEstoque {
   criadoEm   DateTime @default(now())
   produto    Produto  @relation(fields: [produtoId], references: [id])
   venda      Venda?   @relation(fields: [vendaId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
 }
 
 model MovimentacaoCaixa {
   id         String   @id @default(cuid())
+  userId     String
   tipo       String
   categoria  String
   descricao  String
@@ -150,6 +167,7 @@ model MovimentacaoCaixa {
   data       DateTime @default(now())
   observacao String?
   criadoEm   DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
 }
 
 model Configuracao {
@@ -159,12 +177,21 @@ model Configuracao {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  username      String    @unique
-  password      String
-  role          String    @default("user")
-  nome          String?
-  ativo         Boolean   @default(true)
-  criadoEm      DateTime  @default(now())
-  atualizadoEm  DateTime  @updatedAt
+  id                  String                @id @default(cuid())
+  username            String                @unique
+  password            String
+  role                String                @default("user")
+  nome                String?
+  ativo               Boolean               @default(true)
+  criadoEm            DateTime              @default(now())
+  atualizadoEm        DateTime              @updatedAt
+  clientes            Cliente[]
+  fornecedores        Fornecedor[]
+  produtos            Produto[]
+  vendas              Venda[]
+  contasReceber       ContaReceber[]
+  pagamentosReceber   PagamentoReceber[]
+  contasPagar         ContaPagar[]
+  movimentacoesEstoque MovimentacaoEstoque[]
+  movimentacoesCaixa  MovimentacaoCaixa[]
 }

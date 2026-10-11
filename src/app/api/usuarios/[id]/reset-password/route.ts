@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { validatePassword } from "@/lib/credentials-generator";
 
 export async function POST(
   request: NextRequest,
@@ -21,6 +22,11 @@ export async function POST(
 
     if (!newPassword) {
       return NextResponse.json({ error: "Nova senha é obrigatória" }, { status: 400 });
+    }
+
+    // Validação do padrão de senha
+    if (!validatePassword(newPassword)) {
+      return NextResponse.json({ error: "A senha deve ter exatamente 6 caracteres (letras e números)" }, { status: 400 });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);

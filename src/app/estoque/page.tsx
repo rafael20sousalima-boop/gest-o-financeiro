@@ -2,13 +2,19 @@ import { prisma } from "@/lib/prisma";
 import { PageHeader, Panel, EmptyState } from "@/components/ui";
 import { ProdutoForm, MovimentacaoEstoqueForm } from "@/components/ModuleForms";
 import { formatDate, formatMoney, labelUnidade } from "@/lib/utils";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export default async function EstoquePage() {
+  const session = await getServerSession(authOptions);
+  const userId = (session?.user as any)?.id;
+  
   const [produtos, movimentacoes] = await Promise.all([
-    prisma.produto.findMany({ orderBy: { nome: "asc" } }),
+    prisma.produto.findMany({ where: { userId }, orderBy: { nome: "asc" } }),
     prisma.movimentacaoEstoque.findMany({
+      where: { userId },
       include: { produto: true },
       orderBy: { data: "desc" },
       take: 50,

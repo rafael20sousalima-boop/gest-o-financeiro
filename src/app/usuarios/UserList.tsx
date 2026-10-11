@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Key, Eye, EyeOff, Trash2 } from "lucide-react";
+import { Plus, Key, Eye, EyeOff, Trash2, RefreshCw } from "lucide-react";
+import { generateUsername, generatePassword, validateUsername, validatePassword } from "@/lib/credentials-generator";
 
 interface User {
   id: string;
@@ -43,6 +44,18 @@ export function UserList({ initialUsers }: UserListProps) {
 
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validação do padrão
+    if (!validateUsername(formData.username)) {
+      showMessage("error", "O usuário deve ter exatamente 6 letras maiúsculas");
+      return;
+    }
+
+    if (!validatePassword(formData.password)) {
+      showMessage("error", "A senha deve ter exatamente 6 caracteres (letras e números)");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -69,9 +82,23 @@ export function UserList({ initialUsers }: UserListProps) {
     }
   };
 
+  const handleGenerateCredentials = () => {
+    setFormData({
+      ...formData,
+      username: generateUsername(),
+      password: generatePassword()
+    });
+  };
+
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedUser) return;
+
+    // Validação do padrão
+    if (!validatePassword(resetPasswordData.newPassword)) {
+      showMessage("error", "A senha deve ter exatamente 6 caracteres (letras e números)");
+      return;
+    }
 
     setLoading(true);
 
@@ -96,6 +123,10 @@ export function UserList({ initialUsers }: UserListProps) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGeneratePassword = () => {
+    setResetPasswordData({ newPassword: generatePassword() });
   };
 
   const handleToggleActive = async (userId: string, currentStatus: boolean) => {
@@ -235,32 +266,48 @@ export function UserList({ initialUsers }: UserListProps) {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Usuário</label>
-                <input
-                  type="text"
-                  value={formData.username}
-                  onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                  className="w-full px-3 py-2 border rounded"
-                  required
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={formData.username}
+                    onChange={(e) => setFormData({ ...formData, username: e.target.value.toUpperCase() })}
+                    className="w-full px-3 py-2 border rounded"
+                    placeholder="6 letras maiúsculas"
+                    required
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Padrão: 6 letras maiúsculas (ex: ABCDEF)</p>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Senha</label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="w-full px-3 py-2 border rounded pr-10"
-                    required
-                  />
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={formData.password}
+                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      className="w-full px-3 py-2 border rounded pr-10"
+                      placeholder="6 caracteres mistos"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2"
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
                   <button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2"
+                    onClick={handleGenerateCredentials}
+                    className="btn btn-secondary"
+                    title="Gerar credenciais automaticamente"
                   >
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    <RefreshCw size={16} />
                   </button>
                 </div>
+                <p className="text-xs text-gray-500 mt-1">Padrão: 6 caracteres (letras e números, ex: A1b2C3)</p>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Função</label>
@@ -301,22 +348,34 @@ export function UserList({ initialUsers }: UserListProps) {
             <form onSubmit={handleResetPassword} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1">Nova Senha</label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    value={resetPasswordData.newPassword}
-                    onChange={(e) => setResetPasswordData({ newPassword: e.target.value })}
-                    className="w-full px-3 py-2 border rounded pr-10"
-                    required
-                  />
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={resetPasswordData.newPassword}
+                      onChange={(e) => setResetPasswordData({ newPassword: e.target.value })}
+                      className="w-full px-3 py-2 border rounded pr-10"
+                      placeholder="6 caracteres mistos"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2"
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
                   <button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2"
+                    onClick={handleGeneratePassword}
+                    className="btn btn-secondary"
+                    title="Gerar senha automaticamente"
                   >
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    <RefreshCw size={16} />
                   </button>
                 </div>
+                <p className="text-xs text-gray-500 mt-1">Padrão: 6 caracteres (letras e números, ex: A1b2C3)</p>
               </div>
               <div className="flex gap-2 justify-end">
                 <button

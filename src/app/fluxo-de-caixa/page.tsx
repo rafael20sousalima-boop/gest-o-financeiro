@@ -4,6 +4,8 @@ import { PeriodoFiltro, formatDate, formatMoney, labelFormaPagamento } from "@/l
 import { PageHeader, Panel, StatCard, EmptyState } from "@/components/ui";
 import { PeriodoFilters } from "@/components/PeriodoFilters";
 import { CaixaManualForm } from "@/components/ModuleForms";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +16,9 @@ export default async function FluxoCaixaPage({
 }) {
   const params = await searchParams;
   const periodo = (params.periodo as PeriodoFiltro) || "mes";
-  const data = await getFluxoCaixa(periodo, params.de, params.ate);
+  const session = await getServerSession(authOptions);
+  const userId = (session?.user as any)?.id;
+  const data = await getFluxoCaixa(periodo, params.de, params.ate, userId);
 
   return (
     <div>

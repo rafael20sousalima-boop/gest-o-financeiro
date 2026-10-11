@@ -17,8 +17,11 @@ import {
   Menu,
   X,
   LogOut,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/components/ThemeProvider";
 
 const links = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -30,6 +33,7 @@ const links = [
   { href: "/fluxo-de-caixa", label: "Fluxo de Caixa", icon: ArrowLeftRight },
   { href: "/estoque", label: "Estoque", icon: Package },
   { href: "/configuracoes", label: "Configurações", icon: Settings },
+  { href: "/usuarios", label: "Usuários", icon: Users, adminOnly: true },
 ];
 
 export function AppShell({
@@ -43,6 +47,7 @@ export function AppShell({
   const router = useRouter();
   const { data: session } = useSession();
   const [open, setOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   const handleLogout = async () => {
     await signOut({ redirect: false });
@@ -64,6 +69,12 @@ export function AppShell({
               link.href === "/"
                 ? pathname === "/"
                 : pathname.startsWith(link.href);
+            
+            // Não mostrar links adminOnly se o usuário não for admin
+            if ((link as any).adminOnly && (session?.user as any)?.role !== "admin") {
+              return null;
+            }
+            
             return (
               <Link
                 key={link.href}
@@ -111,6 +122,32 @@ export function AppShell({
           >
             {open ? <X size={18} /> : <Menu size={18} />}
             Menu
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={toggleTheme}
+            aria-label="Alternar tema"
+            style={{
+              background: "var(--bg-elevated)",
+              border: "1px solid var(--line)",
+              color: "var(--ink)",
+              padding: "0.7rem",
+              borderRadius: "12px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "transform 0.15s ease, background 0.15s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-1px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+            }}
+          >
+            {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
           </button>
         </div>
         {open && (

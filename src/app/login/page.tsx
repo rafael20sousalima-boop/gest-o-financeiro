@@ -22,17 +22,32 @@ export default function LoginPage() {
       const result = await signIn("credentials", {
         username,
         password,
-        redirect: false
+        redirect: false,
+        callbackUrl
       });
 
       if (result?.error) {
         setError("Usuário ou senha inválidos");
-      } else {
+      } else if (result?.ok) {
+        // Limpar cookies antigos para evitar conflitos
+        document.cookie.split(";").forEach((c) => {
+          if (c.trim().startsWith("next-auth.")) {
+            document.cookie = c
+              .replace(/^ +/, "")
+              .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+          }
+        });
+        
+        // Pequeno delay para garantir que a sessão foi criada
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
         router.push(callbackUrl);
         router.refresh();
+      } else {
+        setError("Erro ao fazer login. Tente novamente.");
       }
     } catch (error) {
-      setError("Erro ao fazer login");
+      setError("Erro ao fazer login. Verifique sua conexão.");
     } finally {
       setLoading(false);
     }

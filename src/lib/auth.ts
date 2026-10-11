@@ -57,12 +57,15 @@ export const authOptions: NextAuthOptions = {
   },
   jwt: {
     secret: process.env.NEXTAUTH_SECRET || "dev-secret-key-change-in-production",
-  },
-  pages: {
-    signIn: "/login"
+    maxAge: 30 * 24 * 60 * 60, // 30 dias
   },
   session: {
-    strategy: "jwt"
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 dias
   },
-  secret: process.env.NEXTAUTH_SECRET || "dev-secret-key-change-in-production"
+  secret: process.env.NEXTAUTH_SECRET || "dev-secret-key-change-in-production",
+  pages: {
+    signIn: "/login",
+    error: "/login"
+  }
 };
