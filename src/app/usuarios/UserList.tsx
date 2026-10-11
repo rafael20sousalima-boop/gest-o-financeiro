@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Plus, Key, Eye, EyeOff, Trash2, RefreshCw } from "lucide-react";
-import { generateUsername, generatePassword, validateUsername, validatePassword } from "@/lib/credentials-generator";
+import { generateUsername, generatePassword } from "@/lib/credentials-generator";
 
 interface User {
   id: string;
@@ -45,14 +45,14 @@ export function UserList({ initialUsers }: UserListProps) {
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validação do padrão
-    if (!validateUsername(formData.username)) {
-      showMessage("error", "O usuário deve ter exatamente 6 letras maiúsculas");
+    // Validação básica
+    if (!formData.username || formData.username.length < 3) {
+      showMessage("error", "O usuário deve ter pelo menos 3 caracteres");
       return;
     }
 
-    if (!validatePassword(formData.password)) {
-      showMessage("error", "A senha deve ter exatamente 6 caracteres (letras e números)");
+    if (!formData.password || formData.password.length < 4) {
+      showMessage("error", "A senha deve ter pelo menos 4 caracteres");
       return;
     }
 
@@ -94,9 +94,9 @@ export function UserList({ initialUsers }: UserListProps) {
     e.preventDefault();
     if (!selectedUser) return;
 
-    // Validação do padrão
-    if (!validatePassword(resetPasswordData.newPassword)) {
-      showMessage("error", "A senha deve ter exatamente 6 caracteres (letras e números)");
+    // Validação básica
+    if (!resetPasswordData.newPassword || resetPasswordData.newPassword.length < 4) {
+      showMessage("error", "A senha deve ter pelo menos 4 caracteres");
       return;
     }
 
@@ -251,49 +251,53 @@ export function UserList({ initialUsers }: UserListProps) {
       {/* Modal Criar Usuário */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h2 className="text-xl font-bold mb-4">Criar Novo Usuário</h2>
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
+            <h2 className="text-xl font-bold mb-4" style={{ fontFamily: "var(--font-display)" }}>Criar Novo Usuário</h2>
             <form onSubmit={handleCreateUser} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Nome</label>
+                <label className="block text-sm font-medium mb-1" style={{ color: "var(--ink-muted)" }}>Nome</label>
                 <input
                   type="text"
                   value={formData.nome}
                   onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                  className="w-full px-3 py-2 border rounded"
+                  className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                  style={{ borderColor: "var(--line)" }}
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Usuário</label>
+                <label className="block text-sm font-medium mb-1" style={{ color: "var(--ink-muted)" }}>Usuário</label>
                 <div className="flex gap-2">
                   <input
                     type="text"
                     value={formData.username}
                     onChange={(e) => setFormData({ ...formData, username: e.target.value.toUpperCase() })}
-                    className="w-full px-3 py-2 border rounded"
-                    placeholder="6 letras maiúsculas"
+                    className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                    style={{ borderColor: "var(--line)" }}
+                    placeholder="Mínimo 3 caracteres"
                     required
                   />
                 </div>
-                <p className="text-xs text-gray-500 mt-1">Padrão: 6 letras maiúsculas (ex: ABCDEF)</p>
+                <p className="text-xs mt-1" style={{ color: "var(--ink-muted)" }}>Mínimo 3 caracteres (ex: JOAO)</p>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Senha</label>
+                <label className="block text-sm font-medium mb-1" style={{ color: "var(--ink-muted)" }}>Senha</label>
                 <div className="flex gap-2">
                   <div className="relative flex-1">
                     <input
                       type={showPassword ? "text" : "password"}
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                      className="w-full px-3 py-2 border rounded pr-10"
-                      placeholder="6 caracteres mistos"
+                      className="w-full px-3 py-2 border rounded pr-10 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      style={{ borderColor: "var(--line)" }}
+                      placeholder="Mínimo 4 caracteres"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-2 top-1/2 -translate-y-1/2"
+                      style={{ color: "var(--ink-muted)" }}
                     >
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
@@ -307,20 +311,21 @@ export function UserList({ initialUsers }: UserListProps) {
                     <RefreshCw size={16} />
                   </button>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">Padrão: 6 caracteres (letras e números, ex: A1b2C3)</p>
+                <p className="text-xs mt-1" style={{ color: "var(--ink-muted)" }}>Mínimo 4 caracteres (ex: A1b2)</p>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Função</label>
+                <label className="block text-sm font-medium mb-1" style={{ color: "var(--ink-muted)" }}>Função</label>
                 <select
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                  className="w-full px-3 py-2 border rounded"
+                  className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                  style={{ borderColor: "var(--line)" }}
                 >
                   <option value="user">Usuário</option>
                   <option value="admin">Admin</option>
                 </select>
               </div>
-              <div className="flex gap-2 justify-end">
+              <div className="flex gap-2 justify-end pt-2">
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
@@ -340,28 +345,30 @@ export function UserList({ initialUsers }: UserListProps) {
       {/* Modal Redefinir Senha */}
       {showResetModal && selectedUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h2 className="text-xl font-bold mb-4">Redefinir Senha</h2>
-            <p className="text-gray-600 mb-4">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
+            <h2 className="text-xl font-bold mb-4" style={{ fontFamily: "var(--font-display)" }}>Redefinir Senha</h2>
+            <p className="mb-4" style={{ color: "var(--ink-muted)" }}>
               Redefinir senha para: <strong>{selectedUser.username}</strong>
             </p>
             <form onSubmit={handleResetPassword} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Nova Senha</label>
+                <label className="block text-sm font-medium mb-1" style={{ color: "var(--ink-muted)" }}>Nova Senha</label>
                 <div className="flex gap-2">
                   <div className="relative flex-1">
                     <input
                       type={showPassword ? "text" : "password"}
                       value={resetPasswordData.newPassword}
                       onChange={(e) => setResetPasswordData({ newPassword: e.target.value })}
-                      className="w-full px-3 py-2 border rounded pr-10"
-                      placeholder="6 caracteres mistos"
+                      className="w-full px-3 py-2 border rounded pr-10 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      style={{ borderColor: "var(--line)" }}
+                      placeholder="Mínimo 4 caracteres"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-2 top-1/2 -translate-y-1/2"
+                      style={{ color: "var(--ink-muted)" }}
                     >
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
@@ -375,9 +382,9 @@ export function UserList({ initialUsers }: UserListProps) {
                     <RefreshCw size={16} />
                   </button>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">Padrão: 6 caracteres (letras e números, ex: A1b2C3)</p>
+                <p className="text-xs mt-1" style={{ color: "var(--ink-muted)" }}>Mínimo 4 caracteres (ex: A1b2)</p>
               </div>
-              <div className="flex gap-2 justify-end">
+              <div className="flex gap-2 justify-end pt-2">
                 <button
                   type="button"
                   onClick={() => {

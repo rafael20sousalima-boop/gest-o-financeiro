@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { validateUsername, validatePassword } from "@/lib/credentials-generator";
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,13 +25,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Usuário e senha são obrigatórios" }, { status: 400 });
     }
 
-    // Validação do padrão de usuário e senha
-    if (!validateUsername(username)) {
-      return NextResponse.json({ error: "O usuário deve ter exatamente 6 letras maiúsculas" }, { status: 400 });
+    // Validação básica
+    if (username.length < 3) {
+      return NextResponse.json({ error: "O usuário deve ter pelo menos 3 caracteres" }, { status: 400 });
     }
 
-    if (!validatePassword(password)) {
-      return NextResponse.json({ error: "A senha deve ter exatamente 6 caracteres (letras e números)" }, { status: 400 });
+    if (password.length < 4) {
+      return NextResponse.json({ error: "A senha deve ter pelo menos 4 caracteres" }, { status: 400 });
     }
 
     const existingUser = await prisma.user.findUnique({
