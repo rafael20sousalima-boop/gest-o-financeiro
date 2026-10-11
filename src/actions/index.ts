@@ -317,6 +317,9 @@ export async function criarVenda(formData: FormData) {
 
   if (!tipoPagamento) throw new Error("Forma de pagamento é obrigatória");
 
+  const userId = await getCurrentUserId();
+  if (!userId) throw new Error("Não autenticado");
+
   let produtoNome = formString(formData, "produtoNome");
   let produto = null as Awaited<ReturnType<typeof prisma.produto.findUnique>>;
 
@@ -361,6 +364,7 @@ export async function criarVenda(formData: FormData) {
   const venda = await prisma.$transaction(async (tx) => {
     const novaVenda = await tx.venda.create({
       data: {
+        userId,
         dataVenda,
         clienteId: clienteId || null,
         produtoId: produtoId || null,
@@ -385,6 +389,7 @@ export async function criarVenda(formData: FormData) {
       });
       await tx.movimentacaoEstoque.create({
         data: {
+          userId,
           produtoId: produto.id,
           tipo: "saida",
           quantidade: qtdEstoque,
@@ -400,6 +405,7 @@ export async function criarVenda(formData: FormData) {
 
       await tx.contaReceber.create({
         data: {
+          userId,
           clienteId,
           vendaId: novaVenda.id,
           dataVenda,
@@ -433,6 +439,9 @@ export async function cancelarVenda(id: string) {
   if (!venda) throw new Error("Venda não encontrada");
   if (venda.statusPagamento === "cancelado") return;
 
+  const userId = await getCurrentUserId();
+  if (!userId) throw new Error("Não autenticado");
+
   await prisma.$transaction(async (tx) => {
     await tx.venda.update({
       where: { id },
@@ -453,6 +462,7 @@ export async function cancelarVenda(id: string) {
       });
       await tx.movimentacaoEstoque.create({
         data: {
+          userId,
           produtoId: mov.produtoId,
           tipo: "entrada",
           quantidade: mov.quantidade,
@@ -478,8 +488,12 @@ export async function criarContaReceber(formData: FormData) {
     throw new Error("Preencha cliente, descrição e valor");
   }
 
+  const userId = await getCurrentUserId();
+  if (!userId) throw new Error("Não autenticado");
+
   await prisma.contaReceber.create({
     data: {
+      userId,
       clienteId,
       dataVenda,
       descricao,
@@ -529,6 +543,7 @@ export async function registrarPagamentoReceber(formData: FormData) {
   await prisma.$transaction(async (tx) => {
     await tx.pagamentoReceber.create({
       data: {
+        userId,
         contaId,
         clienteId: conta.clienteId,
         valor,
@@ -578,12 +593,16 @@ export async function criarContaPagar(formData: FormData) {
     throw new Error("Preencha descrição, categoria, vencimento e valor");
   }
 
+  const userId = await getCurrentUserId();
+  if (!userId) throw new Error("Não autenticado");
+
   const status = resolveStatusPagar({
     dataVencimento,
   });
 
   await prisma.contaPagar.create({
     data: {
+      userId,
       descricao,
       categoria,
       fornecedorId,
@@ -639,8 +658,12 @@ export async function criarMovimentacaoCaixa(formData: FormData) {
     throw new Error("Dados inválidos para movimentação de caixa");
   }
 
+  const userId = await getCurrentUserId();
+  if (!userId) throw new Error("Não autenticado");
+
   await prisma.movimentacaoCaixa.create({
     data: {
+      user: { connect: { id: userId } },
       tipo,
       categoria: categoria || (tipo === "entrada" ? "Outras entradas" : "Outras saídas"),
       descricao,
