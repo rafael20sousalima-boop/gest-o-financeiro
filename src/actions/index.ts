@@ -524,6 +524,9 @@ export async function registrarPagamentoReceber(formData: FormData) {
     throw new Error("Informe conta, valor e forma de pagamento");
   }
 
+  const userId = await getCurrentUserId();
+  if (!userId) throw new Error("Não autenticado");
+
   const conta = await prisma.contaReceber.findUnique({ where: { id: contaId } });
   if (!conta) throw new Error("Conta não encontrada");
   if (conta.status === "cancelado") throw new Error("Conta cancelada");
