@@ -19,7 +19,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setMounted(true);
     const savedTheme = localStorage.getItem("theme") as Theme | null;
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    
+
     if (savedTheme) {
       setTheme(savedTheme);
       document.documentElement.setAttribute("data-theme", savedTheme);
@@ -50,7 +50,21 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 export function useTheme() {
   const context = useContext(ThemeContext);
   if (context === undefined) {
-    throw new Error("useTheme must be used within a ThemeProvider");
+    // Retornar valores padrão se não estiver dentro do ThemeProvider
+    // Isso evita erros durante SSR ou em situações onde o provider não está disponível
+    return {
+      theme: "light" as Theme,
+      toggleTheme: () => {
+        // Fallback: não fazer nada se não estiver no provider
+        try {
+          const newTheme = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+          document.documentElement.setAttribute("data-theme", newTheme);
+          localStorage.setItem("theme", newTheme);
+        } catch (e) {
+          // Ignorar erros no fallback
+        }
+      },
+    };
   }
   return context;
 }
