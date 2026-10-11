@@ -251,8 +251,8 @@ export function UserList({ initialUsers }: UserListProps) {
       {/* Modal Criar Usuário */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
-            <h2 className="text-xl font-bold mb-4" style={{ fontFamily: "var(--font-display)" }}>Criar Novo Usuário</h2>
+          <div className="rounded-lg p-6 max-w-md w-full mx-4 shadow-xl" style={{ background: "var(--bg-elevated)" }}>
+            <h2 className="text-xl font-bold mb-4" style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}>Criar Novo Usuário</h2>
             <form onSubmit={handleCreateUser} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1" style={{ color: "var(--ink-muted)" }}>Nome</label>
@@ -260,8 +260,12 @@ export function UserList({ initialUsers }: UserListProps) {
                   type="text"
                   value={formData.nome}
                   onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                  className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-                  style={{ borderColor: "var(--line)" }}
+                  className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2"
+                  style={{
+                    borderColor: "var(--line)",
+                    background: "var(--bg-elevated)",
+                    color: "var(--ink)"
+                  }}
                   required
                 />
               </div>
@@ -272,8 +276,12 @@ export function UserList({ initialUsers }: UserListProps) {
                     type="text"
                     value={formData.username}
                     onChange={(e) => setFormData({ ...formData, username: e.target.value.toUpperCase() })}
-                    className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-                    style={{ borderColor: "var(--line)" }}
+                    className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2"
+                    style={{
+                      borderColor: "var(--line)",
+                      background: "var(--bg-elevated)",
+                      color: "var(--ink)"
+                    }}
                     placeholder="Mínimo 3 caracteres"
                     required
                   />
@@ -288,8 +296,12 @@ export function UserList({ initialUsers }: UserListProps) {
                       type={showPassword ? "text" : "password"}
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                      className="w-full px-3 py-2 border rounded pr-10 focus:outline-none focus:ring-2 focus:ring-green-500"
-                      style={{ borderColor: "var(--line)" }}
+                      className="w-full px-3 py-2 border rounded pr-10 focus:outline-none focus:ring-2"
+                      style={{
+                        borderColor: "var(--line)",
+                        background: "var(--bg-elevated)",
+                        color: "var(--ink)"
+                      }}
                       placeholder="Mínimo 4 caracteres"
                       required
                     />
@@ -318,8 +330,12 @@ export function UserList({ initialUsers }: UserListProps) {
                 <select
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                  className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-                  style={{ borderColor: "var(--line)" }}
+                  className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2"
+                  style={{
+                    borderColor: "var(--line)",
+                    background: "var(--bg-elevated)",
+                    color: "var(--ink)"
+                  }}
                 >
                   <option value="user">Usuário</option>
                   <option value="admin">Admin</option>
@@ -345,10 +361,10 @@ export function UserList({ initialUsers }: UserListProps) {
       {/* Modal Redefinir Senha */}
       {showResetModal && selectedUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
-            <h2 className="text-xl font-bold mb-4" style={{ fontFamily: "var(--font-display)" }}>Redefinir Senha</h2>
+          <div className="rounded-lg p-6 max-w-md w-full mx-4 shadow-xl" style={{ background: "var(--bg-elevated)" }}>
+            <h2 className="text-xl font-bold mb-4" style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}>Redefinir Senha</h2>
             <p className="mb-4" style={{ color: "var(--ink-muted)" }}>
-              Redefinir senha para: <strong>{selectedUser.username}</strong>
+              Redefinir senha para: <strong style={{ color: "var(--ink)" }}>{selectedUser.username}</strong>
             </p>
             <form onSubmit={handleResetPassword} className="space-y-4">
               <div>
@@ -359,8 +375,12 @@ export function UserList({ initialUsers }: UserListProps) {
                       type={showPassword ? "text" : "password"}
                       value={resetPasswordData.newPassword}
                       onChange={(e) => setResetPasswordData({ newPassword: e.target.value })}
-                      className="w-full px-3 py-2 border rounded pr-10 focus:outline-none focus:ring-2 focus:ring-green-500"
-                      style={{ borderColor: "var(--line)" }}
+                      className="w-full px-3 py-2 border rounded pr-10 focus:outline-none focus:ring-2"
+                      style={{
+                        borderColor: "var(--line)",
+                        background: "var(--bg-elevated)",
+                        color: "var(--ink)"
+                      }}
                       placeholder="Mínimo 4 caracteres"
                       required
                     />
