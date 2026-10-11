@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/components/ThemeProvider";
+import { WhatsAppButton } from "@/components/WhatsAppButton";
 
 const links = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -165,6 +166,7 @@ export function AppShell({
           />
         )}
         {children}
+        <WhatsAppButton />
       </div>
     </div>
   );
