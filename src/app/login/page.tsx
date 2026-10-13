@@ -26,17 +26,23 @@ export default function LoginPage() {
         callbackUrl
       });
 
+      console.log("Login result:", result);
+
       if (result?.error) {
+        console.error("Login error:", result.error);
         setError("Usuário ou senha inválidos");
       } else if (result?.ok) {
         // Redirecionar para o callbackUrl ou "/" (Dashboard)
         const redirectUrl = callbackUrl || "/";
+        console.log("Redirecting to:", redirectUrl);
         router.push(redirectUrl);
         router.refresh();
       } else {
+        console.error("Unknown login result:", result);
         setError("Erro ao fazer login. Tente novamente.");
       }
     } catch (error) {
+      console.error("Login exception:", error);
       setError("Erro ao fazer login. Verifique sua conexão.");
     } finally {
       setLoading(false);
