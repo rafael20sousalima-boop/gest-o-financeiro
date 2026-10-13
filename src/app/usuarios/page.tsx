@@ -7,7 +7,16 @@ import { UserList } from "./UserList";
 export default async function UsuariosPage() {
   const session = await getServerSession(authOptions);
 
-  if (!session || (session.user as any).role !== "admin") {
+  if (!session) {
+    redirect("/");
+  }
+
+  const currentUser = session.user as any;
+  const userId = currentUser.id;
+  const userRole = currentUser.role;
+
+  // Apenas admin pode acessar a página
+  if (userRole !== "admin") {
     redirect("/");
   }
 
@@ -23,7 +32,7 @@ export default async function UsuariosPage() {
           <p className="page-subtitle">Crie e gerencie usuários do sistema</p>
         </div>
       </div>
-      <UserList initialUsers={users} />
+      <UserList initialUsers={users} currentUserId={userId} currentUserRole={userRole} />
     </div>
   );
 }

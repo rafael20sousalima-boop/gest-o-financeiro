@@ -44,22 +44,22 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8">
+    <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg)' }}>
+      <div className="max-w-md w-full rounded-lg shadow-md p-8" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--line)' }}>
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Gestão Financeira</h1>
-          <p className="text-gray-600 mt-2">Faça login para continuar</p>
+          <h1 className="text-2xl font-bold" style={{ color: 'var(--ink)' }}>Gestão Financeira</h1>
+          <p className="mt-2" style={{ color: 'var(--ink-muted)' }}>Faça login para continuar</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+            <div className="px-4 py-3 rounded" style={{ background: 'var(--danger)', color: 'white' }}>
               {error}
             </div>
           )}
 
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="username" className="block text-sm font-medium mb-2" style={{ color: 'var(--ink-muted)' }}>
               Usuário
             </label>
             <input
@@ -68,13 +68,19 @@ export default function LoginPage() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2"
+              style={{
+                border: '1px solid var(--line)',
+                background: 'var(--bg-elevated)',
+                color: 'var(--ink)',
+                transition: 'background 0.3s ease, border-color 0.3s ease'
+              }}
               placeholder="Digite seu usuário"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="password" className="block text-sm font-medium mb-2" style={{ color: 'var(--ink-muted)' }}>
               Senha
             </label>
             <input
@@ -83,7 +89,13 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2"
+              style={{
+                border: '1px solid var(--line)',
+                background: 'var(--bg-elevated)',
+                color: 'var(--ink)',
+                transition: 'background 0.3s ease, border-color 0.3s ease'
+              }}
               placeholder="Digite sua senha"
             />
           </div>
@@ -91,7 +103,18 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-2 px-4 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{
+              background: 'var(--brand)',
+              color: 'white',
+              transition: 'transform 0.15s ease, background 0.15s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'var(--brand-strong)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'var(--brand)';
+            }}
           >
             {loading ? "Entrando..." : "Entrar"}
           </button>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import { Plus, Key, Eye, EyeOff, Trash2, RefreshCw } from "lucide-react";
 import { generateUsername, generatePassword } from "@/lib/credentials-generator";
 
@@ -15,9 +16,12 @@ interface User {
 
 interface UserListProps {
   initialUsers: User[];
+  currentUserId: string;
+  currentUserRole: string;
 }
 
-export function UserList({ initialUsers }: UserListProps) {
+export function UserList({ initialUsers, currentUserId, currentUserRole }: UserListProps) {
+  const { data: session } = useSession();
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
@@ -215,30 +219,38 @@ export function UserList({ initialUsers }: UserListProps) {
                   <td className="p-3 border-b">{new Date(user.criadoEm).toLocaleDateString("pt-BR")}</td>
                   <td className="p-3 border-b">
                     <div style={{ display: "flex", gap: "0.5rem" }}>
-                      <button
-                        onClick={() => {
-                          setSelectedUser(user);
-                          setShowResetModal(true);
-                        }}
-                        className="btn btn-secondary"
-                        title="Redefinir senha"
-                      >
-                        <Key size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleToggleActive(user.id, user.ativo)}
-                        className="btn btn-secondary"
-                        title={user.ativo ? "Desativar" : "Ativar"}
-                      >
-                        {user.ativo ? "🔒" : "🔓"}
-                      </button>
-                      <button
-                        onClick={() => handleDeleteUser(user.id)}
-                        className="btn btn-secondary"
-                        title="Excluir"
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                      {/* Não permitir que usuários normais alterem sua própria senha */}
+                      {currentUserRole === "admin" || user.id !== currentUserId ? (
+                        <button
+                          onClick={() => {
+                            setSelectedUser(user);
+                            setShowResetModal(true);
+                          }}
+                          className="btn btn-secondary"
+                          title="Redefinir senha"
+                        >
+                          <Key size={16} />
+                        </button>
+                      ) : null}
+                      {/* Apenas admin pode ativar/desativar e excluir usuários */}
+                      {currentUserRole === "admin" ? (
+                        <>
+                          <button
+                            onClick={() => handleToggleActive(user.id, user.ativo)}
+                            className="btn btn-secondary"
+                            title={user.ativo ? "Desativar" : "Ativar"}
+                          >
+                            {user.ativo ? "🔒" : "🔓"}
+                          </button>
+                          <button
+                            onClick={() => handleDeleteUser(user.id)}
+                            className="btn btn-secondary"
+                            title="Excluir"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </>
+                      ) : null}
                     </div>
                   </td>
                 </tr>
