@@ -13,37 +13,26 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) {
-          console.log("AUTH ERROR: Missing credentials");
           return null;
         }
-
-        console.log("AUTH: Attempting login for username:", credentials.username);
 
         const user = await prisma.user.findUnique({
           where: { username: credentials.username }
         });
 
         if (!user) {
-          console.log("AUTH ERROR: User not found for username:", credentials.username);
-          // Listar todos os usuários para debug
-          const allUsers = await prisma.user.findMany({ select: { username: true, ativo: true } });
-          console.log("AUTH: All users in database:", allUsers);
           return null;
         }
 
         if (!user.ativo) {
-          console.log("AUTH ERROR: User is inactive:", user.username);
           return null;
         }
 
         const passwordMatch = await bcrypt.compare(credentials.password, user.password);
 
         if (!passwordMatch) {
-          console.log("AUTH ERROR: Password mismatch for user:", user.username);
           return null;
         }
-
-        console.log("AUTH SUCCESS: Login successful for user:", user.username);
 
         return {
           id: user.id,
