@@ -14,6 +14,9 @@ export async function middleware(request: any) {
     const token = await getToken({
       req: request,
       secret: process.env.NEXTAUTH_SECRET || "dev-secret-key-change-in-production",
+      cookieName: process.env.NODE_ENV === 'production' 
+        ? '__Secure-next-auth.session-token' 
+        : 'next-auth.session-token',
     });
 
     // Se não tiver token válido, redirecionar para login

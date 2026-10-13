@@ -22,23 +22,16 @@ export default function LoginPage() {
       const result = await signIn("credentials", {
         username,
         password,
-        redirect: false,
-        callbackUrl
+        redirect: true,
+        callbackUrl: callbackUrl || "/"
       });
 
       if (result?.error) {
         setError("Usuário ou senha inválidos");
-      } else if (result?.ok) {
-        // Redirecionar para o callbackUrl ou "/" (Dashboard)
-        const redirectUrl = callbackUrl || "/";
-        router.push(redirectUrl);
-        router.refresh();
-      } else {
-        setError("Erro ao fazer login. Tente novamente.");
+        setLoading(false);
       }
     } catch (error) {
       setError("Erro ao fazer login. Verifique sua conexão.");
-    } finally {
       setLoading(false);
     }
   };
