@@ -12,16 +12,12 @@ async function main() {
   });
 
   if (existingAdmin) {
-    console.log("Usuário admin já existe. Atualizando senha...");
     const hashedPassword = await bcrypt.hash(adminPassword, 10);
     await prisma.user.update({
       where: { username: adminUsername },
       data: { password: hashedPassword }
     });
-    console.log("Senha do admin atualizada com sucesso!");
   } else {
-    console.log("Criando usuário admin e empresa...");
-
     // Criar empresa para o admin
     const empresa = await prisma.empresa.create({
       data: {
@@ -50,11 +46,7 @@ async function main() {
         empresaId: empresa.id
       }
     });
-    console.log("Usuário admin e empresa criados com sucesso!");
   }
-
-  console.log(`Usuário: ${adminUsername}`);
-  console.log(`Senha: ${adminPassword}`);
 }
 
 main()
