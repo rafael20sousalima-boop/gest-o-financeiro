@@ -13,11 +13,11 @@ export async function getDashboardData(
   periodo: PeriodoFiltro = "mes",
   de?: string,
   ate?: string,
-  userId?: string
+  empresaId?: string
 ) {
   const { inicio, fim } = getPeriodoRange(periodo, de, ate);
 
-  const whereClause = userId ? { userId } : {};
+  const whereClause = empresaId ? { empresaId } : {};
 
   const [vendas, contasReceber, contasPagar, clientes, pagamentos, config] =
     await Promise.all([
@@ -41,7 +41,7 @@ export async function getDashboardData(
       prisma.pagamentoReceber.findMany({
         where: { ...whereClause, dataPagamento: { gte: inicio, lte: fim } },
       }),
-      prisma.configuracao.findUnique({ where: { id: 1 } }),
+      prisma.configuracao.findFirst({ where: empresaId ? { empresaId } : {} }),
     ]);
 
   const faturamentoTotal = vendas.reduce((s, v) => s + v.valorTotal, 0);
@@ -230,11 +230,11 @@ export async function getDashboardData(
   };
 }
 
-export async function getFluxoCaixa(periodo: PeriodoFiltro, de?: string, ate?: string, userId?: string) {
+export async function getFluxoCaixa(periodo: PeriodoFiltro, de?: string, ate?: string, empresaId?: string) {
   const { inicio, fim } = getPeriodoRange(periodo, de, ate);
-  const config = await prisma.configuracao.findUnique({ where: { id: 1 } });
+  const config = await prisma.configuracao.findFirst({ where: empresaId ? { empresaId } : {} });
 
-  const whereClause = userId ? { userId } : {};
+  const whereClause = empresaId ? { empresaId } : {};
 
   const [vendas, pagamentos, contasPagas, manuais] = await Promise.all([
     prisma.venda.findMany({

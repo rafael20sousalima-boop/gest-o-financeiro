@@ -25,10 +25,17 @@ export default async function DashboardPage({
   const periodo = (params.periodo as PeriodoFiltro) || "mes";
   const session = await getServerSession(authOptions);
   const userId = (session?.user as any)?.id;
-  
+
+  // Buscar empresaId do usuário
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { empresaId: true }
+  });
+  const empresaId = user?.empresaId;
+
   let data;
   try {
-    data = await getDashboardData(periodo, params.de, params.ate, userId);
+    data = await getDashboardData(periodo, params.de, params.ate, empresaId);
   } catch (error) {
     // Redirect to setup if database is not configured
     return (

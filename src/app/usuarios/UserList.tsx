@@ -34,7 +34,8 @@ export function UserList({ initialUsers, currentUserId, currentUserRole }: UserL
     username: "",
     password: "",
     nome: "",
-    role: "user"
+    role: "user",
+    nomeEmpresa: ""
   });
 
   const [resetPasswordData, setResetPasswordData] = useState({
@@ -60,6 +61,11 @@ export function UserList({ initialUsers, currentUserId, currentUserRole }: UserL
       return;
     }
 
+    if (!formData.nomeEmpresa || formData.nomeEmpresa.length < 2) {
+      showMessage("error", "O nome da empresa deve ter pelo menos 2 caracteres");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -74,7 +80,7 @@ export function UserList({ initialUsers, currentUserId, currentUserRole }: UserL
       if (response.ok) {
         setUsers([...users, data.user]);
         setShowCreateModal(false);
-        setFormData({ username: "", password: "", nome: "", role: "user" });
+        setFormData({ username: "", password: "", nome: "", role: "user", nomeEmpresa: "" });
         showMessage("success", "Usuário criado com sucesso!");
       } else {
         showMessage("error", data.error || "Erro ao criar usuário");
@@ -280,6 +286,23 @@ export function UserList({ initialUsers, currentUserId, currentUserRole }: UserL
                   }}
                   required
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1" style={{ color: "var(--ink-muted)" }}>Nome da Empresa</label>
+                <input
+                  type="text"
+                  value={formData.nomeEmpresa}
+                  onChange={(e) => setFormData({ ...formData, nomeEmpresa: e.target.value })}
+                  className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2"
+                  style={{
+                    borderColor: "var(--line)",
+                    background: "var(--bg-elevated)",
+                    color: "var(--ink)"
+                  }}
+                  placeholder="Ex: Minha Loja"
+                  required
+                />
+                <p className="text-xs mt-1" style={{ color: "var(--ink-muted)" }}>Nome que aparecerá no sistema deste usuário</p>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1" style={{ color: "var(--ink-muted)" }}>Usuário</label>

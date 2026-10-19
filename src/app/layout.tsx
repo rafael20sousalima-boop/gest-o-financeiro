@@ -34,12 +34,12 @@ export default async function RootLayout({
   let config = null;
   try {
     // Adicionar timeout para evitar travamentos
-    const timeoutPromise = new Promise((_, reject) => 
+    const timeoutPromise = new Promise((_, reject) =>
       setTimeout(() => reject(new Error("Database timeout")), 3000)
     );
-    
+
     config = await Promise.race([
-      prisma.configuracao.findUnique({ where: { id: 1 } }),
+      prisma.configuracao.findFirst(),
       timeoutPromise
     ]) as any;
   } catch (error) {

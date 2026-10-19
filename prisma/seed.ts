@@ -20,7 +20,25 @@ async function main() {
     });
     console.log("Senha do admin atualizada com sucesso!");
   } else {
-    console.log("Criando usuário admin...");
+    console.log("Criando usuário admin e empresa...");
+
+    // Criar empresa para o admin
+    const empresa = await prisma.empresa.create({
+      data: {
+        nome: "Rafael Gestão"
+      }
+    });
+
+    // Criar configuração para a empresa
+    await prisma.configuracao.create({
+      data: {
+        nomeEmpresa: "Rafael Gestão",
+        saldoInicial: 0,
+        empresaId: empresa.id
+      }
+    });
+
+    // Criar usuário admin
     const hashedPassword = await bcrypt.hash(adminPassword, 10);
     await prisma.user.create({
       data: {
@@ -28,10 +46,11 @@ async function main() {
         password: hashedPassword,
         nome: "Admin",
         role: "admin",
-        ativo: true
+        ativo: true,
+        empresaId: empresa.id
       }
     });
-    console.log("Usuário admin criado com sucesso!");
+    console.log("Usuário admin e empresa criados com sucesso!");
   }
 
   console.log(`Usuário: ${adminUsername}`);

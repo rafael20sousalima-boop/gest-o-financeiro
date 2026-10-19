@@ -8,8 +8,6 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
-    console.log("Session:", JSON.stringify(session, null, 2));
-
     if (!session) {
       return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
     }
@@ -19,7 +17,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { username, password, nome, role } = body;
+    const { username, password, nome, role, nomeEmpresa } = body;
 
     if (!username || !password) {
       return NextResponse.json({ error: "Usuário e senha são obrigatórios" }, { status: 400 });
@@ -44,12 +42,29 @@ export async function POST(request: NextRequest) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Criar empresa para o novo usuário
+    const empresa = await prisma.empresa.create({
+      data: {
+        nome: nomeEmpresa || "Nova Empresa"
+      }
+    });
+
+    // Criar configuração para a empresa
+    await prisma.configuracao.create({
+      data: {
+        nomeEmpresa: nomeEmpresa || "Nova Empresa",
+        saldoInicial: 0,
+        empresaId: empresa.id
+      }
+    });
+
     const user = await prisma.user.create({
       data: {
         username,
         password: hashedPassword,
         nome,
-        role: role || "user"
+        role: role || "user",
+        empresaId: empresa.id
       }
     });
 
