@@ -72,7 +72,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ user: userWithoutPassword }, { status: 201 });
   } catch (error) {
-    console.error("Erro ao criar usuário:", error);
     return NextResponse.json({ error: "Erro ao criar usuário", details: String(error) }, { status: 500 });
   }
 }
