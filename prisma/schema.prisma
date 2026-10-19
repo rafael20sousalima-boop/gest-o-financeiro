@@ -9,7 +9,7 @@ datasource db {
 
 model Cliente {
   id            String             @id @default(cuid())
-  empresaId     String
+  empresaId     String?
   nome          String
   documento     String?
   telefone      String?
@@ -25,12 +25,12 @@ model Cliente {
   contasReceber ContaReceber[]
   pagamentos    PagamentoReceber[]
   vendas        Venda[]
-  empresa       Empresa            @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  empresa       Empresa?            @relation(fields: [empresaId], references: [id], onDelete: Cascade)
 }
 
 model Fornecedor {
   id               String       @id @default(cuid())
-  empresaId        String
+  empresaId        String?
   nome             String
   documento        String?
   telefone         String?
@@ -41,12 +41,12 @@ model Fornecedor {
   criadoEm         DateTime     @default(now())
   atualizadoEm     DateTime     @updatedAt
   contasPagar      ContaPagar[]
-  empresa          Empresa      @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  empresa          Empresa?     @relation(fields: [empresaId], references: [id], onDelete: Cascade)
 }
 
 model Produto {
   id            String                @id @default(cuid())
-  empresaId     String
+  empresaId     String?
   nome          String
   categoria     String?
   unidade       String                @default("unidade")
@@ -59,12 +59,12 @@ model Produto {
   atualizadoEm  DateTime              @updatedAt
   movimentacoes MovimentacaoEstoque[]
   vendas        Venda[]
-  empresa       Empresa               @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  empresa       Empresa?               @relation(fields: [empresaId], references: [id], onDelete: Cascade)
 }
 
 model Venda {
   id              String                @id @default(cuid())
-  empresaId       String
+  empresaId       String?
   dataVenda       DateTime              @default(now())
   clienteId       String?
   produtoId       String?
@@ -85,12 +85,12 @@ model Venda {
   movimentacoes   MovimentacaoEstoque[]
   cliente         Cliente?              @relation(fields: [clienteId], references: [id])
   produto         Produto?              @relation(fields: [produtoId], references: [id])
-  empresa         Empresa               @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  empresa         Empresa?               @relation(fields: [empresaId], references: [id], onDelete: Cascade)
 }
 
 model ContaReceber {
   id             String             @id @default(cuid())
-  empresaId      String
+  empresaId      String?
   clienteId      String
   vendaId        String?            @unique
   dataVenda      DateTime
@@ -106,12 +106,12 @@ model ContaReceber {
   cliente        Cliente            @relation(fields: [clienteId], references: [id])
   venda          Venda?             @relation(fields: [vendaId], references: [id])
   pagamentos     PagamentoReceber[]
-  empresa        Empresa            @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  empresa        Empresa?            @relation(fields: [empresaId], references: [id], onDelete: Cascade)
 }
 
 model PagamentoReceber {
   id             String       @id @default(cuid())
-  empresaId      String
+  empresaId      String?
   contaId        String
   clienteId      String?
   valor          Float
@@ -121,12 +121,12 @@ model PagamentoReceber {
   criadoEm       DateTime     @default(now())
   cliente        Cliente?     @relation(fields: [clienteId], references: [id])
   conta          ContaReceber @relation(fields: [contaId], references: [id], onDelete: Cascade)
-  empresa        Empresa      @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  empresa        Empresa?     @relation(fields: [empresaId], references: [id], onDelete: Cascade)
 }
 
 model ContaPagar {
   id             String      @id @default(cuid())
-  empresaId      String
+  empresaId      String?
   descricao      String
   categoria      String
   fornecedorId   String?
@@ -139,12 +139,12 @@ model ContaPagar {
   criadoEm       DateTime    @default(now())
   atualizadoEm   DateTime    @updatedAt
   fornecedor     Fornecedor? @relation(fields: [fornecedorId], references: [id])
-  empresa        Empresa     @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  empresa        Empresa?    @relation(fields: [empresaId], references: [id], onDelete: Cascade)
 }
 
 model MovimentacaoEstoque {
   id         String   @id @default(cuid())
-  empresaId  String
+  empresaId  String?
   produtoId  String
   tipo       String
   quantidade Float
@@ -154,12 +154,12 @@ model MovimentacaoEstoque {
   criadoEm   DateTime @default(now())
   produto    Produto  @relation(fields: [produtoId], references: [id])
   venda      Venda?   @relation(fields: [vendaId], references: [id])
-  empresa    Empresa  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  empresa    Empresa? @relation(fields: [empresaId], references: [id], onDelete: Cascade)
 }
 
 model MovimentacaoCaixa {
   id         String   @id @default(cuid())
-  empresaId  String
+  empresaId  String?
   tipo       String
   categoria  String
   descricao  String
@@ -167,7 +167,7 @@ model MovimentacaoCaixa {
   data       DateTime @default(now())
   observacao String?
   criadoEm   DateTime @default(now())
-  empresa    Empresa  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  empresa    Empresa? @relation(fields: [empresaId], references: [id], onDelete: Cascade)
 }
 
 model Empresa {
@@ -192,8 +192,8 @@ model Configuracao {
   id           Int      @id @default(1)
   nomeEmpresa  String   @default("Minha Empresa")
   saldoInicial Float    @default(0)
-  empresaId    String   @unique
-  empresa      Empresa  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  empresaId    String?
+  empresa      Empresa? @relation(fields: [empresaId], references: [id], onDelete: Cascade)
 }
 
 model User {
@@ -203,8 +203,8 @@ model User {
   role                String                @default("user")
   nome                String?
   ativo               Boolean               @default(true)
-  empresaId           String
+  empresaId           String?
   criadoEm            DateTime              @default(now())
   atualizadoEm        DateTime              @updatedAt
-  empresa             Empresa               @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  empresa             Empresa?               @relation(fields: [empresaId], references: [id], onDelete: Cascade)
 }
