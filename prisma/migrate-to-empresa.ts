@@ -64,50 +64,42 @@ async function main() {
   });
 
   // Migrar todos os dados existentes para a empresa do admin
-  await prisma.cliente.updateMany({
-    where: { userId: adminUser.id },
-    data: { empresaId: empresa.id }
-  });
+  // A migração precisa usar raw SQL porque o campo userId não existe mais no schema
+  await prisma.$executeRaw`
+    UPDATE "Cliente" SET "empresaId" = $1 WHERE "userId" = $2
+  `, [empresa.id, adminUser.id];
 
-  await prisma.fornecedor.updateMany({
-    where: { userId: adminUser.id },
-    data: { empresaId: empresa.id }
-  });
+  await prisma.$executeRaw`
+    UPDATE "Fornecedor" SET "empresaId" = $1 WHERE "userId" = $2
+  `, [empresa.id, adminUser.id];
 
-  await prisma.produto.updateMany({
-    where: { userId: adminUser.id },
-    data: { empresaId: empresa.id }
-  });
+  await prisma.$executeRaw`
+    UPDATE "Produto" SET "empresaId" = $1 WHERE "userId" = $2
+  `, [empresa.id, adminUser.id];
 
-  await prisma.venda.updateMany({
-    where: { userId: adminUser.id },
-    data: { empresaId: empresa.id }
-  });
+  await prisma.$executeRaw`
+    UPDATE "Venda" SET "empresaId" = $1 WHERE "userId" = $2
+  `, [empresa.id, adminUser.id];
 
-  await prisma.contaReceber.updateMany({
-    where: { userId: adminUser.id },
-    data: { empresaId: empresa.id }
-  });
+  await prisma.$executeRaw`
+    UPDATE "ContaReceber" SET "empresaId" = $1 WHERE "userId" = $2
+  `, [empresa.id, adminUser.id];
 
-  await prisma.pagamentoReceber.updateMany({
-    where: { userId: adminUser.id },
-    data: { empresaId: empresa.id }
-  });
+  await prisma.$executeRaw`
+    UPDATE "PagamentoReceber" SET "empresaId" = $1 WHERE "userId" = $2
+  `, [empresa.id, adminUser.id];
 
-  await prisma.contaPagar.updateMany({
-    where: { userId: adminUser.id },
-    data: { empresaId: empresa.id }
-  });
+  await prisma.$executeRaw`
+    UPDATE "ContaPagar" SET "empresaId" = $1 WHERE "userId" = $2
+  `, [empresa.id, adminUser.id];
 
-  await prisma.movimentacaoEstoque.updateMany({
-    where: { userId: adminUser.id },
-    data: { empresaId: empresa.id }
-  });
+  await prisma.$executeRaw`
+    UPDATE "MovimentacaoEstoque" SET "empresaId" = $1 WHERE "userId" = $2
+  `, [empresa.id, adminUser.id];
 
-  await prisma.movimentacaoCaixa.updateMany({
-    where: { userId: adminUser.id },
-    data: { empresaId: empresa.id }
-  });
+  await prisma.$executeRaw`
+    UPDATE "MovimentacaoCaixa" SET "empresaId" = $1 WHERE "userId" = $2
+  `, [empresa.id, adminUser.id];
 }
 
 main()

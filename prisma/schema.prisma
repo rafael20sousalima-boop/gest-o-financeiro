@@ -207,13 +207,4 @@ model User {
   criadoEm            DateTime              @default(now())
   atualizadoEm        DateTime              @updatedAt
   empresa             Empresa               @relation(fields: [empresaId], references: [id], onDelete: Cascade)
-  clientes            Cliente[]
-  fornecedores        Fornecedor[]
-  produtos            Produto[]
-  vendas              Venda[]
-  contasReceber       ContaReceber[]
-  pagamentosReceber   PagamentoReceber[]
-  contasPagar         ContaPagar[]
-  movimentacoesEstoque MovimentacaoEstoque[]
-  movimentacoesCaixa  MovimentacaoCaixa[]
 }
